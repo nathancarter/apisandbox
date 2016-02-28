@@ -1,0 +1,16 @@
+{
+  "name": "apisandbox",
+  "version": "0.0.0",
+  "description": "A web-based GUI for playing with any JavaScript API in a sandbox",
+  "author": "Nathan Carter <ncarter@bentley.edu> (http://web.bentley.edu/empl/c/ncarter)",
+  "license": "LGPLv3",
+  "dependencies": {
+    "coffee-script": "1.8.0",
+    "uglify-js" : "2.4.21",
+    "colors": "1.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nathancarter/apisandbox.git"
+  }
+}
