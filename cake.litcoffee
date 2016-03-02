@@ -10,14 +10,6 @@ We keep a set of build utilities in a separate module, which we now load.
 
     build = require './buildutils'
 
-## Easy way to build all
-
-If you want to build and test evertything, just run `cake all`. It simply
-invokes all the other tasks, defined below.
-
-    build.task 'all', 'Build app and run tests', ->
-        build.enqueue 'app'
-
 ## Requirements
 
 Verify that `npm install` has been run in this folder, then import other
@@ -67,7 +59,7 @@ Run the compile process defined in [the build utilities
 module](buildutils.litcoffee).  This compiles, minifies, and generates
 source maps.  We run it on the source files.
 
-        build.compile p.resolve( appdir, srcout )
+        build.compile p.resolve( appdir, srcout ), done
 
 ## The `pages` build process
 
