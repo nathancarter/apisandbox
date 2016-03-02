@@ -1,25 +1,4 @@
 
-Create History class as an array of objects of type State, plus these
-member functions.
-```coffee
-# go back to state i and do something different instead.
-# the "something different" is given by the function f, which takes as its
-# one parameter the list of states after i that are being replaced, and
-# returns a list of actions to run from state i forward
-instead = ( i, f ) ->
-    toReplace = savedStates[i+1...]
-    remove savedStates[i+1...]
-    if savedStates[i].environment is null
-        savedStates[j] = actions[j].apply savedStates[j-1] for j in 1..i
-    last = savedStates[i]
-    for action in f toReplace
-        savedStates.push last = action.apply last
-changeAction = ( i, A ) -> instead ( removed ) -> [A,removed[1...]...]
-deleteAction = ( i ) -> instead ( removed ) -> removed[1...]
-duplicateAction = ( i ) -> instead ( removed ) -> [removed[0],removed...]
-appendAction = ( A ) -> savedStates.push A savedStates[savedStates.length-1]
-```
-
 Create APISandbox namespace partially, as follows.
 ```coffee
 APISandbox =

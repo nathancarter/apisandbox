@@ -77,3 +77,57 @@ member function, or by treating the data as JSON.
                     result.environment = null
                     break
             result
+
+## History class
+
+A history is essentially an array of states, together with some functions
+for modifying them in ways suitable to this application.
+
+    APISandbox.History = History = class History
+
+It starts out as containing one state, which came from nowhere (no command
+generated it) and which has no environment or DOM elements showing it.
+(But DOM elements could be inserted later if desired.)
+
+        constructor : ->
+            @states = [ new State() ]
+
+The easiest operation we can do is append an action to the history, which
+creates a new state based on the last one.
+
+        appendAction = ( action ) ->
+            @states.push action @states[@states.length-1]
+
+This central function (considered a private function) returns the history to
+state `i` and then changes the history going forward from `i`.  It does so
+by handing to the function `f` the array of commands that used to follow
+after `i`, letting `f` return a modified version of that history, and then
+applying those commands in order to regenerate the remainder of the history.
+
+        rewriteHistory = ( i, f ) ->
+
+Remove and store the portion to be rewritten.
+
+            toRewrite = ( state.command for state in @states.splice i+1 )
+
+If environments are not stored, re-run all history up to `i` to regenerate
+those environments.
+
+            if @states[i].environment is null
+                for j in [1..i]
+                    @states[j] = @states[j].command.apply @states[j-1]
+
+Continually apply items from the modified command list to rewrite history.
+
+            last = @states[i]
+            for action in f toRewrite
+                @states.push last = action.apply last
+
+Now we can define several convenience functions that rewrite history.
+
+        changeAction = ( i, action ) ->
+            rewriteHistory ( oldActions ) -> [action,oldActions[1...]...]
+        deleteAction = ( i ) ->
+            rewriteHistory ( oldActions ) -> oldActions[1...]
+        duplicateAction = ( i ) ->
+            rewriteHistory ( oldActions ) -> [oldActions[0],oldActions...]
