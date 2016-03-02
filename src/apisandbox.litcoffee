@@ -33,7 +33,9 @@ Verify that the object on which we're supposed to run the command exists
                     with this name: #{command.objectName}"
 
 Duplicate the old state, then modify it by using the method stored in this
-command.  Return the result.
+command.  Return the result.  Note that the last parameter passed is always
+the environment, so that the method may choose to ignore it, or use it if it
+needs to modify it (which most won't).
 
             result = state.copy()
             result.command = @
@@ -41,7 +43,7 @@ command.  Return the result.
                 result.environment = state.environment
                 state.environment = null
             command.method.apply result.environment[command.objectName],
-                command.parameters...
+                command.parameters..., state.environment
 
 ## State class
 
