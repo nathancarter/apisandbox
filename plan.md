@@ -1,14 +1,9 @@
 
-Create State class
- * the command that transitioned here (of type Command, defaults to null)
- * environment (map from names to objects, defaults to `{ }`); only those
-   key-value pairs whose values satisfy some class's chi will be visible;
-   it may be null in some cases, as described below
+Extend the State class with the following member function.
  * `copy()` returns a new state with no command and an environment with the
    same keys, but `value.copy()` for each value; if any value has no copy
    member function, we attempt to copy it as JSON; if that fails, the
    environment member of `copy()` is null.
- * the DOM object representing the state (the command's result)
 
 Add apply function to Command class; `apply( oldState )` does this:
  * Create a copy of `oldState`.
