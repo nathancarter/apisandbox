@@ -19,6 +19,30 @@ forms.
         constructor : ( @objectName, @method, @parameters... ) ->
             # no other actions necessary
 
+Apply the command to a state with the following function, which creates a
+new state.  (The `State` class is defined below.)
+
+        apply : ( state ) =>
+
+Verify that the object on which we're supposed to run the command exists
+(if such an object was specified by name).
+
+            if command.objectName and \
+               command.objectName not of state.environment
+                throw "Cannot invoke the command, because there is no object
+                    with this name: #{command.objectName}"
+
+Duplicate the old state, then modify it by using the method stored in this
+command.  Return the result.
+
+            result = state.copy()
+            result.command = @
+            if result.environment is null
+                result.environment = state.environment
+                state.environment = null
+            command.method.apply result.environment[command.objectName],
+                command.parameters...
+
 ## State class
 
     APISandbox.State = State = class State

@@ -1,11 +1,4 @@
 
-Add apply function to Command class; `apply( oldState )` does this:
- * Create a copy of `oldState`.
- * Set its command to be this command.
- * If its environment is null then *move* `oldState.environment` into it,
-   *nulling* the old one.
- * Return `command.method.apply( command.object, command.args... )`.
-
 Create History class as an array of objects of type State, plus these
 member functions.
 ```coffee
