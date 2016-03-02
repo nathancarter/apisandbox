@@ -12,14 +12,12 @@ div {
 
 #title-div {
     background-color: #eeeeee;
+    width: 1000px;
+    margin: auto;
 }
 
-#command-div {
-    width: 300px;
-    float: left;
-}
-
-#results-div {
+#main-div {
     background-color: #dddddd;
-    margin-left: 300px;
+    width: 1000px;
+    margin: auto;
 }

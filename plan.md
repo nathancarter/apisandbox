@@ -1,10 +1,4 @@
 
-Fix current `index.html` file.
- * No left command DIV.
- * Title should include "clear" and "permalink" buttons.
- * Rename the file to `demo1.html`.
- * Create `index.html` to list the demos.
-
 Create the command class without its apply function (yet):
  * object name (null if constructor)
  * method to call
@@ -200,6 +194,10 @@ Extend the APISandbox namespace with two corresponding functions.
  * Extend the `setup()` function so that it checks the query string and, if
    it contains content that passes successfully through `history.decode()`,
    fill the view DIV with the representations of all the history's states.
+Create a Permalink button that navigates to the permalink.  Probably it
+belongs in the title bar.
+
+Create a Clear button that clears the contents of the page.
 
 Add a medium Example, using an SVG toolkit like [Snap](http://snapsvg.io),
 in a new demo page, `demo2.html`.
@@ -208,6 +206,10 @@ HandfulOfDice(n) # constructor
 h.roll(m) # list of sums, with histogram
 h.show() # picture of n dice
 ```
+
+Push to GitHub.
+
+Share with Ken.
 
 Bigger Examples
  * Mathematical/statistical computations
