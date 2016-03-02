@@ -1,10 +1,4 @@
 
-Extend the State class with the following member function.
- * `copy()` returns a new state with no command and an environment with the
-   same keys, but `value.copy()` for each value; if any value has no copy
-   member function, we attempt to copy it as JSON; if that fails, the
-   environment member of `copy()` is null.
-
 Add apply function to Command class; `apply( oldState )` does this:
  * Create a copy of `oldState`.
  * Set its command to be this command.

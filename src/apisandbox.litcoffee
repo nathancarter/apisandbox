@@ -37,3 +37,19 @@ The element is the DOM element representing this state.
         constructor : ( @command = null ) ->
             @environment = { }
             @element = null
+
+Copying a state does not copy the command that generated it nor the DOM
+element that represents it (leaving both null), but attempts to copy the
+contents of the environment, if they can be copied, either using a `copy`
+member function, or by treating the data as JSON.
+
+        copy : =>
+            result = new State()
+            for own key, value of @environment
+                try
+                    result.environment[key] = value?.copy?() ? \
+                        JSON.parse JSON.stringify value
+                catch e
+                    result.environment = null
+                    break
+            result
