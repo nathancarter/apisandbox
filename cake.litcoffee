@@ -43,8 +43,11 @@ brevity.
 
         L = __dirname.length + 1
 
-Next concatenate all `.litcoffee` source files into one.  We also respect
-the ordering in `srcorder` to put some of the files first on the list.
+Next concatenate all `.litcoffee` source files into one.  The only exception
+to this rule is if any of them end in `-solo.litcoffee`, then they're
+requesting that they be compiled individually.  So we filter those out.  We
+also respect the ordering in `srcorder` to put some of the files first on
+the list.
 
         all = build.dir srcdir, /.litcoffee$/
         moveup = [ ]
@@ -53,13 +56,45 @@ the ordering in `srcorder` to put some of the files first on the list.
                 when RegExp( "/#{file}$" ).test fullpath )
         all = ( file for file in all when file not in moveup )
         all = moveup.concat all
+        all = ( f for f in all when f[-15..] isnt '-solo.litcoffee' )
+        build.concatFiles all, '\n\n', p.resolve appdir, srcout
+
+Also compile any files specific to the main app, which will sit in the app
+folder rather than the source folder.  The exception to this rule is if any
+of them end in `-solo.litcoffee`, then they're requesting that they be
+compiled individually, so we filter those out.
+
+        all = ( f for f in build.dir( appdir, /\.litcoffee$/ ) \
+            when f.indexOf( srcout ) is -1 and
+                 f[-15..] isnt '-solo.litcoffee' )
         build.concatFiles all, '\n\n', p.resolve appdir, srcout
 
 Run the compile process defined in [the build utilities
 module](buildutils.litcoffee).  This compiles, minifies, and generates
-source maps.  We run it on the source files.
+source maps.  We run it in sequence on the source files, the app-specific
+files, and the "solo" files in the app folder.
 
-        build.compile p.resolve( appdir, srcout ), done
+First, here is a little function that recursively runs the build process on
+all `-solo.litcoffee` files in the src and app folders.
+
+        solofiles = build.dir appdir, /-solo.litcoffee$/
+        srcsolofiles = build.dir srcdir, /-solo.litcoffee$/
+        buildNext = ->
+            if solofiles.length > 0
+                build.compile solofiles.shift(), buildNext
+            else if srcsolofiles.length > 0
+                file = srcsolofiles.shift()
+                prefix = file.split( '/' ).pop()[..-10]
+                build.copyFile "src/#{prefix}litcoffee",
+                    "app/#{prefix}litcoffee",
+                    -> build.compile file, buildNext, appdir
+            else
+                done()
+
+We put that function as the last step in the compilation sequence, by using
+it as the last callback, below.
+
+        build.compile p.resolve( appdir, srcout ), buildNext
 
 ## The `pages` build process
 

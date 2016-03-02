@@ -307,20 +307,20 @@ error if there was one.
                 short = shortFilename moveTo
                 exports.runShellCommands [
                     description : "\tMoving #{base}.js to #{short}..."
-                    command : "mv #{base}.js #{moveTo}"
+                    command : "mv #{base}.js #{dir}#{moveTo}"
                     cwd : path
                 ,
                     description : "\tMoving #{base}.js.map to #{short}..."
-                    command : "mv #{base}.js.map #{moveTo}"
+                    command : "mv #{base}.js.map #{dir}#{moveTo}"
                     cwd : path
                 ,
                     description : "\tMoving #{base}.min.js to #{short}..."
-                    command : "mv #{base}.min.js #{moveTo}"
+                    command : "mv #{base}.min.js #{dir}#{moveTo}"
                     cwd : path
                 ,
                     description : "\tMoving #{base}.min.js.map to
                         #{short}..."
-                    command : "mv #{base}.min.js.map #{moveTo}"
+                    command : "mv #{base}.min.js.map #{dir}#{moveTo}"
                     cwd : path
                 ], callback
             else
