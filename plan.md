@@ -1,28 +1,4 @@
 
-Create APISandbox namespace partially, as follows.
-```coffee
-APISandbox =
-    setup : ( div, initialHTML ) ->
-        # initialize history member
-        # clear the contents of the given div
-        # take the initial HTML and create a DOM object, storing it in the
-        #   initial state
-    addClass : ( name, desc, chi ) ->
-    addConstructor : ( phrase, func, args... ) ->
-        # Phrase should be like "Make a new word" or something short.
-        # each arg is of this form:
-        # name (string), description (string), type (string from among:
-        #   int, string, bool, enum, object, float, JSON, object
-        # defaultValue
-        # optionally validator, a function that can work with any type
-        # optionally min and max for int/float
-        # for an enum, a list of values, required
-        # for a string, optionally long=true, to mean to use textarea
-        # (object is a special type of enum, using the env's keys)
-        # If no constructor provided, cannot create instances;
-        # see next function.
-```
-
 Create example use of that class, which so far does nothing.
 ```coffee
 Word('...') # constructor

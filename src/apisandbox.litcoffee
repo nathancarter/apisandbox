@@ -133,3 +133,59 @@ Now we can define several convenience functions that rewrite history.
             rewriteHistory ( oldActions ) -> oldActions[1...]
         duplicateAction = ( i ) ->
             rewriteHistory ( oldActions ) -> [oldActions[0],oldActions...]
+
+## API Sandbox Namespace
+
+The following function should be called after the page loads, to let the
+API Sandbox know in which DIV of the DOM it should place its output.  You
+can also provide the visual representation of the initial state of the
+sandbox, as an HTML string.
+
+    APISandbox.setup = ( div, initialHTML = '' ) ->
+        init = ( @history = new History() ).states[0]
+        init.DOM = div.ownerDocument.createElement 'div'
+        init.DOM.innerHTML = initialHTML
+        while div.hasChildNodes()
+            div.removeChild div.lastChild
+        div.appendChild init.DOM
+        @data = { }
+
+Call this function to inform the API Sandbox about a new class.  Provide its
+name and description as strings, and a characteristic function `chi` that
+can take any datum as input and return true iff that input is an instance
+of the class, and false otherwise.  (Note that these need not be objects
+and instances in the JavaScript sense; they can be any data and any
+characteristic function.)
+
+    APISandbox.addClass = ( name, desc, chi ) ->
+        ( @data.classes ?= { } )[name] =
+            description : desc
+            isAnInstance : chi
+
+Call this function to inform the API Sandbox about a new constructor.  Give
+the user-visible phrase that describes the construction (e.g., "Make a new
+employee record" or "Create a new random number"), the function to be called
+when the construction needs to be done, and the types of the parameters it
+takes.
+
+Each argument must be an object with the following attributes.
+ * name (a string)
+ * description (a string)
+ * type (a string that's one of these: int, string, bool, enum, object,
+   float, JSON, object)
+ * defaultValue (any value of the appropriate type)
+ * validator (an optional function that returns an object with two fields,
+   "valid," which is a boolean, and "message," which can explain why, and
+   is optional)
+ * min (if the type is int or float, optional)
+ * max (if the type is int or float, optional)
+ * values (an array of legal values, used only for enum types)
+ * long (optional boolean, only relevant for strings, whether the string is
+   expected to be long, and thus needs a large input box in the UI)
+ * object (which amounts to a special type of enum, using the object names
+   in the current environment)
+
+    addConstructor : ( phrase, func, parameters... ) ->
+        ( @data.constructors ?= { } )[phrase] =
+            call : funct
+            parameters : parameters
