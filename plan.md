@@ -1,11 +1,4 @@
 
-Create the command class without its apply function (yet):
- * object name (null if constructor)
- * method to call
- * arguments array, each of which is one of the following two cases
-   * `{ name : 'object name' }`
-   * `{ value : atomic or JSON }`
-
 Create State class
  * the command that transitioned here (of type Command, defaults to null)
  * environment (map from names to objects, defaults to `{ }`); only those
