@@ -12,7 +12,7 @@ specify parameters when calling functions like
 `APISandbox.addConstructor()`, defined in
 [apisandbox.litcoffee](apisandbox.litcoffee).
 
-    APISandbox.inputWidget = ( index, paramIndex, type, optionalArgs ) ->
+    APISandbox.inputWidget = ( index, paramIndex, type ) ->
         # This does not yet add interactivity (event listeners), just the
         # widgets themselves.  Also, does not yet support name/description
         # members.  More to come later.
@@ -42,15 +42,30 @@ specify parameters when calling functions like
             when 'JSON', 'string+'
                 "<textarea rows=6 cols=40
                     #{id}>#{type.defaultValue}</textarea>"
+        result.innerHTML =
+            "<tr><td>#{type.name}</td><td>#{result.innerHTML}</td></tr>"
+        result
 
-    # DOM element, a two-column table of key-value pairs/widgets
-    tableForFunction : ( className, fname ) ->
-        # not yet built
+The following function creates the DOM element containing all the input
+widgets (and their labels) for an entire sequence of parameters to a given
+function.  The index is an integer index into the history, which is passed
+on to the `inputWidget` function, to ensure unique IDs.  The `className` and
+`funcName` parameters distinguish the function whose parameters we're
+creating widgets for.  If it is a constructor, leave `className` null and
+provide as `funcName` the phrase describing the constructor.  The result is
+a two-column table.
 
-    # same as previous, but for constructors
-    tableForConstructor : ( className ) ->
-        # not yet built
+    APISandbox.tableForFunction = ( index, className, funcName ) ->
+        data = if funcName then @data.methods?[className]?[funcName] \
+            else @data.constructors?[funcName]
+        result = @div.ownerDocument.createElement 'div'
+        table = @div.ownerDocument.createElement 'table'
+        table.setAttribute 'border', 0
+        result.appendChild table
+        for parameter, i in parameters
+            table.appendChild @inputWidget index, i, parameter
+        result
 
     # partial command UI as shown below, not yet interactive
-    createCommandUI : ( index ) ->
+    APISandbox.createCommandUI = ( index ) ->
         # not yet built
