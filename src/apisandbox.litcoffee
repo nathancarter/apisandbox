@@ -185,7 +185,7 @@ Each argument must be an object with the following attributes.
  * object (which amounts to a special type of enum, using the object names
    in the current environment)
 
-    addConstructor : ( phrase, func, parameters... ) ->
+    APISandbox.addConstructor = ( phrase, func, parameters... ) ->
         ( @data.constructors ?= { } )[phrase] =
-            call : funct
+            call : func
             parameters : parameters
