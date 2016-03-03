@@ -26,6 +26,8 @@ These constants define how the functions below perform.
     p = require 'path'
     srcdir = p.resolve __dirname, 'src'
     srcorder = [
+        'apisandbox.litcoffee'
+        'widgets.litcoffee'
     ]
     srcout = 'app.litcoffee'
     appdir = 'app'

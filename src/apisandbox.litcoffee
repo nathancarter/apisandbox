@@ -141,13 +141,13 @@ API Sandbox know in which DIV of the DOM it should place its output.  You
 can also provide the visual representation of the initial state of the
 sandbox, as an HTML string.
 
-    APISandbox.setup = ( div, initialHTML = '' ) ->
+    APISandbox.setup = ( @div, initialHTML = '' ) ->
         init = ( @history = new History() ).states[0]
-        init.DOM = div.ownerDocument.createElement 'div'
+        init.DOM = @div.ownerDocument.createElement 'div'
         init.DOM.innerHTML = initialHTML
-        while div.hasChildNodes()
-            div.removeChild div.lastChild
-        div.appendChild init.DOM
+        while @div.hasChildNodes()
+            @div.removeChild @div.lastChild
+        @div.appendChild init.DOM
         @data = { }
 
 Call this function to inform the API Sandbox about a new class.  Provide its
@@ -171,18 +171,18 @@ takes.
 Each argument must be an object with the following attributes.
  * name (a string)
  * description (a string)
- * type (a string that's one of these: int, string, bool, enum, object,
-   float, JSON, object)
+ * type (a string that's one of these: integer, string, boolean, choice,
+   object, float, JSON)
  * defaultValue (any value of the appropriate type)
  * validator (an optional function that returns an object with two fields,
    "valid," which is a boolean, and "message," which can explain why, and
    is optional)
- * min (if the type is int or float, optional)
- * max (if the type is int or float, optional)
- * values (an array of legal values, used only for enum types)
+ * min (if the type is integer or float, optional)
+ * max (if the type is integer or float, optional)
+ * values (an array of legal values, used only for choice types)
  * long (optional boolean, only relevant for strings, whether the string is
    expected to be long, and thus needs a large input box in the UI)
- * object (which amounts to a special type of enum, using the object names
+ * object (which amounts to a special type of choice, using the object names
    in the current environment)
 
     APISandbox.addConstructor = ( phrase, func, parameters... ) ->

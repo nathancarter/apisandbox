@@ -1,18 +1,4 @@
 
-Create UI-supporting members of APISandbox.
-```coffee
-inputWidget : ( index, type, optionalArgs... ) ->
-    # uses index to ensure unique IDs; no value set
-    # returns DOM objects, not HTML
-    # don't add interactivity yet
-tableForFunction : ( className, fname ) ->
-    # DOM element, a two-column table of key-value pairs/widgets
-tableForConstructor : ( className ) ->
-    # same as previous, but for constructors
-createCommandUI : ( index ) ->
-    # partial command UI as shown below, not yet interactive
-```
-
 Add to APISandbox the `createCommandUI(index)` function.  For now, just have
 it support all registered constructors, with a UI like this.
 ```
