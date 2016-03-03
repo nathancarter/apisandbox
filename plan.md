@@ -1,12 +1,4 @@
 
-Create example use of that class, which so far does nothing.
-```coffee
-Word('...') # constructor
-w.reverse() # changes w to its reverse
-w.sort() # sorts the letters of w alphabetically
-w.facts() # prints facts/links about w
-```
-
 Create UI-supporting members of APISandbox.
 ```coffee
 inputWidget : ( index, type, optionalArgs... ) ->
@@ -92,6 +84,13 @@ Extend the command UI to permit running member functions in this form.
     [PARAM-NAME-1]  [PARAM-VALUE-1]
     [PARAM-NAME-2]  [PARAM-VALUE-2]
     ...             ...
+```
+
+Extend the demo with these functions.
+```
+w.reverse() # changes w to its reverse
+w.sort() # sorts the letters of w alphabetically
+w.facts() # prints facts/links about w
 ```
 
 Ensure that Command instances are correctly created from this new UI.
