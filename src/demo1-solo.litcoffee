@@ -1,7 +1,6 @@
 
 Set up the demo.
 
-    APISandbox.setup document.getElementById 'main-div'
     APISandbox.addClass 'Word', 'A string of characters',
         ( x ) -> typeof( x ) is 'string'
     APISandbox.addConstructor 'Add a word',
@@ -17,3 +16,4 @@ Set up the demo.
                     valid : no
                     message : 'Only the letters a-z are allowed.'
         }
+    APISandbox.setup document.getElementById 'main-div'

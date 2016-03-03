@@ -16,15 +16,14 @@ specify parameters when calling functions like
         # This does not yet add interactivity (event listeners), just the
         # widgets themselves.  Also, does not yet support name/description
         # members.  More to come later.
-        result = @div.ownerDocument.createElement 'div'
         typeName = type.type
         if typeName is 'string'
             typeName += if type.long then '+' else '-'
         id = "id='input-#{index}-#{paramIndex}'"
-        result.innerHTML = switch typeName
+        right = switch typeName
             when 'integer', 'float', 'string-'
-                "<input type='text' #{id}
-                    width=40>#{type.defaultValue}</input>"
+                "<input type='text' #{id} width=40
+                    value='#{type.defaultValue ? ''}'/>"
             when 'boolean'
                 onoff = if type.defaultValue then 'selected' else ''
                 "<input type='checkbox' #{id} #{onoff}/>"
@@ -42,8 +41,8 @@ specify parameters when calling functions like
             when 'JSON', 'string+'
                 "<textarea rows=6 cols=40
                     #{id}>#{type.defaultValue}</textarea>"
-        result.innerHTML =
-            "<tr><td>#{type.name}</td><td>#{result.innerHTML}</td></tr>"
+        result = @div.ownerDocument.createElement 'tr'
+        result.innerHTML = "<td>#{type.name}</td><td>#{right}</td>"
         result
 
 The following function creates the DOM element containing all the input
@@ -56,13 +55,15 @@ provide as `funcName` the phrase describing the constructor.  The result is
 a two-column table.
 
     APISandbox.tableForFunction = ( index, className, funcName ) ->
-        data = if funcName then @data.methods?[className]?[funcName] \
+        console.log index, className, funcName, @data
+        data = if className then @data.methods?[className]?[funcName] \
             else @data.constructors?[funcName]
         result = @div.ownerDocument.createElement 'div'
         table = @div.ownerDocument.createElement 'table'
-        table.setAttribute 'border', 0
+        table.style.borderSpacing = '10px'
+        table.style.borderCollapse = 'separate'
         result.appendChild table
-        for parameter, i in parameters
+        for parameter, i in data.parameters
             table.appendChild @inputWidget index, i, parameter
         result
 
@@ -75,11 +76,12 @@ table below that choice.
         result = @div.ownerDocument.createElement 'div'
         result.innerHTML = "<select id='ctor-select-#{index}'></select>"
         firstPhrase = null
-        for phrase, data in @data.constructors
+        for phrase, data of @data.constructors
             firstPhrase ?= phrase
             option = @div.ownerDocument.createElement 'option'
             option.setAttribute 'value', option.innerHTML = phrase
             result.childNodes[0].appendChild option
-        result.childNodes[0].childNodes[0].setAttribute 'selected', yes
-        result.appendChild @tableForFunction index, null, firstPhrase
+        if firstPhrase
+            result.childNodes[0].childNodes[0]?.setAttribute 'selected', yes
+            result.appendChild @tableForFunction index, null, firstPhrase
         result

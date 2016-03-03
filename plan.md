@@ -1,6 +1,4 @@
 
-Modify the constructor to place a command UI after the initial state HTML.
-
 Support validators by showing their feedback text.
 
 Make APISandbox able to fill in default values by implementing this function

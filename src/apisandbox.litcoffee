@@ -136,19 +136,22 @@ Now we can define several convenience functions that rewrite history.
 
 ## API Sandbox Namespace
 
+The following function should be called before
+
 The following function should be called after the page loads, to let the
 API Sandbox know in which DIV of the DOM it should place its output.  You
 can also provide the visual representation of the initial state of the
 sandbox, as an HTML string.
 
     APISandbox.setup = ( @div, initialHTML = '' ) ->
+        @data ?= { }
         init = ( @history = new History() ).states[0]
         init.DOM = @div.ownerDocument.createElement 'div'
         init.DOM.innerHTML = initialHTML
         while @div.hasChildNodes()
             @div.removeChild @div.lastChild
         @div.appendChild init.DOM
-        @data = { }
+        @div.appendChild @createCommandUI 1
 
 Call this function to inform the API Sandbox about a new class.  Provide its
 name and description as strings, and a characteristic function `chi` that
@@ -158,7 +161,7 @@ and instances in the JavaScript sense; they can be any data and any
 characteristic function.)
 
     APISandbox.addClass = ( name, desc, chi ) ->
-        ( @data.classes ?= { } )[name] =
+        ( ( @data ?= { } ).classes ?= { } )[name] =
             description : desc
             isAnInstance : chi
 
@@ -186,6 +189,6 @@ Each argument must be an object with the following attributes.
    in the current environment)
 
     APISandbox.addConstructor = ( phrase, func, parameters... ) ->
-        ( @data.constructors ?= { } )[phrase] =
+        ( ( @data ?= { } ).constructors ?= { } )[phrase] =
             call : func
             parameters : parameters
