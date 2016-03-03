@@ -1,13 +1,4 @@
 
-Add to APISandbox the `createCommandUI(index)` function.  For now, just have
-it support all registered constructors, with a UI like this.
-```
-[CTOR PHRASE]
-    [PARAM-NAME-1]  [PARAM-VALUE-1]
-    [PARAM-NAME-2]  [PARAM-VALUE-2]
-    ...             ...
-```
-
 Modify the constructor to place a command UI after the initial state HTML.
 
 Support validators by showing their feedback text.

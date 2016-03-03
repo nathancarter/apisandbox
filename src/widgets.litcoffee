@@ -66,6 +66,20 @@ a two-column table.
             table.appendChild @inputWidget index, i, parameter
         result
 
-    # partial command UI as shown below, not yet interactive
+Creates a DIV containing a drop-down list from which you can choose the
+phrase describing a constructor, and then fill out the appropriate parameter
+table below that choice.
+
     APISandbox.createCommandUI = ( index ) ->
-        # not yet built
+        # interactivity not yet built; still to come
+        result = @div.ownerDocument.createElement 'div'
+        result.innerHTML = "<select id='ctor-select-#{index}'></select>"
+        firstPhrase = null
+        for phrase, data in @data.constructors
+            firstPhrase ?= phrase
+            option = @div.ownerDocument.createElement 'option'
+            option.setAttribute 'value', option.innerHTML = phrase
+            result.childNodes[0].appendChild option
+        result.childNodes[0].childNodes[0].setAttribute 'selected', yes
+        result.appendChild @tableForFunction index, null, firstPhrase
+        result
