@@ -55,7 +55,6 @@ provide as `funcName` the phrase describing the constructor.  The result is
 a two-column table.
 
     APISandbox.tableForFunction = ( index, className, funcName ) ->
-        console.log index, className, funcName, @data
         data = if className then @data.methods?[className]?[funcName] \
             else @data.constructors?[funcName]
         result = @div.ownerDocument.createElement 'div'
