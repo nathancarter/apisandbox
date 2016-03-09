@@ -1,22 +1,4 @@
 
-Support validators by showing their feedback text.
-
-Make APISandbox able to fill in default values by implementing this function
-and using it.
-```coffee
-writeDataToWidget : ( index, value ) ->
-    # use getElementById() to find widget in page
-```
-
-Make APISandbox able to read UI values by implementing this function.
-```coffee
-readDataFrom : ( index ) ->
-    # converts names of objects to objects
-    # every other type of data needs no conversion
-readAllData : ->
-    # gives all widgets' results, in an array
-```
-
 Add an Apply button on the bottom right that performs the action as follows.
 This first version will only work for the *last* command in the UI.  We will
 enhance it below to work for all commands in the history.
@@ -37,6 +19,24 @@ Verify that this works for any command UI on the list.
 Add a Cancel button on the bottom right that's visible iff Apply has been
 clicked, but then things have been modified.  What Cancel does is it
 reverses all those modifications, then hides the Apply and Cancel buttons.
+
+Add support for object types.
+
+Make APISandbox able to fill in default values by implementing this function
+and using it.
+```coffee
+writeDataToWidget : ( index, value ) ->
+    # use getElementById() to find widget in page
+```
+
+Make APISandbox able to read UI values by implementing this function.
+```coffee
+readDataFrom : ( index ) ->
+    # converts names of objects to objects
+    # every other type of data needs no conversion
+readAllData : ->
+    # gives all widgets' results, in an array
+```
 
 Extend the APISandbox namespace to permit registering member functions for
 classes.
