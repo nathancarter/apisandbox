@@ -16,6 +16,8 @@ forms.
  * `{ name : 'object name' }`
  * `{ value : atomic or JSON }`
 
+For a constructor command, set the object name to null.
+
         constructor : ( @objectName, @method, @parameters... ) ->
             # no other actions necessary
 
@@ -27,8 +29,7 @@ new state.  (The `State` class is defined below.)
 Verify that the object on which we're supposed to run the command exists
 (if such an object was specified by name).
 
-            if command.objectName and \
-               command.objectName not of state.environment
+            if @objectName and @objectName not of state.environment
                 throw "Cannot invoke the command, because there is no object
                     with this name: #{command.objectName}"
 
@@ -42,8 +43,14 @@ needs to modify it (which most won't).
             if result.environment is null
                 result.environment = state.environment
                 state.environment = null
-            command.method.apply result.environment[command.objectName],
-                command.parameters..., state.environment
+            element = @method.apply result.environment[@objectName],
+                [ @parameters..., result.environment ]
+            if element not instanceof window.Node
+                div = APISandbox.div.ownerDocument.createElement 'div'
+                div.innerHTML = "#{element}"
+                element = div
+            result.element = element
+            result
 
 ## State class
 
@@ -95,10 +102,11 @@ generated it) and which has no environment or DOM elements showing it.
             @states = [ new State() ]
 
 The easiest operation we can do is append an action to the history, which
-creates a new state based on the last one.
+creates a new state based on the last one.  Here we assume that `action` is
+an instance of class `Command`, defined above.
 
-        appendAction = ( action ) ->
-            @states.push action @states[@states.length-1]
+        appendAction : ( action ) =>
+            @states.push action.apply @states[@states.length-1]
 
 This central function (considered a private function) returns the history to
 state `i` and then changes the history going forward from `i`.  It does so
@@ -106,7 +114,7 @@ by handing to the function `f` the array of commands that used to follow
 after `i`, letting `f` return a modified version of that history, and then
 applying those commands in order to regenerate the remainder of the history.
 
-        rewriteHistory = ( i, f ) ->
+        rewriteHistory : ( i, f ) =>
 
 Remove and store the portion to be rewritten.
 
@@ -127,12 +135,12 @@ Continually apply items from the modified command list to rewrite history.
 
 Now we can define several convenience functions that rewrite history.
 
-        changeAction = ( i, action ) ->
-            rewriteHistory ( oldActions ) -> [action,oldActions[1...]...]
-        deleteAction = ( i ) ->
-            rewriteHistory ( oldActions ) -> oldActions[1...]
-        duplicateAction = ( i ) ->
-            rewriteHistory ( oldActions ) -> [oldActions[0],oldActions...]
+        changeAction : ( i, action ) =>
+            @rewriteHistory ( oldActions ) -> [action,oldActions[1...]...]
+        deleteAction : ( i ) =>
+            @rewriteHistory ( oldActions ) -> oldActions[1...]
+        duplicateAction : ( i ) =>
+            @rewriteHistory ( oldActions ) -> [oldActions[0],oldActions...]
 
 ## API Sandbox Namespace
 
