@@ -1,14 +1,4 @@
 
-Add an Apply button on the bottom right that performs the action as follows.
-This first version will only work for the *last* command in the UI.  We will
-enhance it below to work for all commands in the history.
- * Create a Command instance representing the content of the UI.
- * Call `appendAction` on that command instance.
- * Hide the Apply button, since it no longer applies.
- * Append the DOM object stored in the newly created last state.
- * Call `createCommandUI` on the new state and append it to the UI.
-Verify that this works only for the last command UI on the list.
-
 Enhance it so that for those that are not the last, it does this:
  * Use `replaceAction` instead of `appendAction`.
  * Remove from the DOM all the stuff after the changed state.

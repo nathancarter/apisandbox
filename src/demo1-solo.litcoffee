@@ -4,7 +4,10 @@ Set up the demo.
     APISandbox.addClass 'Word', 'A string of characters',
         ( x ) -> typeof( x ) is 'string'
     APISandbox.addConstructor 'Add a word',
-        ( ( word, environment ) -> environment[word] = word ),
+        ( word, environment ) ->
+            environment[word] = word
+            "Created this new word: #{word}."
+    ,
         {
             name : 'the word to add'
             description : 'the word to add (e.g., "red" or "hamster")'

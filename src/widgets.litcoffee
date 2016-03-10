@@ -50,6 +50,8 @@ specify parameters when calling functions like
             if validation?.valid is no
                 notify.get( 0 ).innerHTML =
                     "<font color=red>#{validation.message ? ''}</font>"
+                input.get( 0 ).setAttribute 'data-invalid',
+                    validation.message ? '--'
             else
                 notify.get( 0 ).innerHTML = validation.message ? ''
         input.change validate
@@ -61,6 +63,18 @@ following routine.  Right now this is very simple, but it will be upgraded
 in the future.
 
     APISandbox.readDataFrom = ( widget ) -> ( $ widget ).val()
+
+To read data from all widgets for a given index, use the following routine.
+
+    APISandbox.readAll = ( index ) ->
+        result = [ ]
+        i = 0
+        while ( next = ( $ "#input-#{index}-#{i}" ) ).length > 0
+            if message = next.get( 0 ).getAttribute 'data-invalid'
+                throw message
+            result.push next.val()
+            i++
+        result
 
 The following function creates the DOM element containing all the input
 widgets (and their labels) for an entire sequence of parameters to a given
@@ -97,7 +111,27 @@ table below that choice.
             option = @div.ownerDocument.createElement 'option'
             option.setAttribute 'value', option.innerHTML = phrase
             result.childNodes[0].appendChild option
-        if firstPhrase
-            result.childNodes[0].childNodes[0]?.setAttribute 'selected', yes
-            result.appendChild @tableForFunction index, null, firstPhrase
+        if not firstPhrase then return result
+        result.childNodes[0].childNodes[0]?.setAttribute 'selected', yes
+        table = @tableForFunction index, null, firstPhrase
+        result.appendChild table # table is actually a DIV
+        table = table.childNodes[0] # here's the actual table element
+        table.appendChild row = @div.ownerDocument.createElement 'tr'
+        row.innerHTML = "<td></td><td align='right'>
+            <input type='button' value='Apply' id='apply-button-#{index}'/>
+            </td>"
+        ( $ "#apply-button-#{index}", row ).click =>
+            choice = ( $ "#ctor-select-#{index}", result ).val()
+            if not ctorData = @data.constructors[choice]
+                return console.log 'Error: no such constructor:', choice
+            try
+                parameters = @readAll index
+            catch e
+                return alert "Fix the errors, starting with:\n\n#{e}"
+            command = new @Command null, ctorData.call, parameters...
+            @history.appendAction command
+            ( $ "#apply-button-#{index}", row ).hide()
+            @div.appendChild \
+                @history.states[@history.states.length-1].element
+            @div.appendChild @createCommandUI @history.states.length
         result
