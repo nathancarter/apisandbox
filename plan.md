@@ -1,4 +1,7 @@
 
+Make it so that choosing a new constructor re-populates the parameter UI
+table.
+
 Enhance Apply so that for commands that are not the last, it does this:
  * Use `replaceAction` instead of `appendAction`.
  * Remove from the DOM all the stuff after the changed state.

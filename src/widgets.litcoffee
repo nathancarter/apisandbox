@@ -102,7 +102,9 @@ phrase describing a constructor, and then fill out the appropriate parameter
 table below that choice.
 
     APISandbox.createCommandUI = ( index ) ->
-        # interactivity not yet built; still to come
+
+Build the drop-down menu listing all the constructors.
+
         result = @div.ownerDocument.createElement 'div'
         result.innerHTML = "<select id='ctor-select-#{index}'></select>"
         firstPhrase = null
@@ -111,16 +113,34 @@ table below that choice.
             option = @div.ownerDocument.createElement 'option'
             option.setAttribute 'value', option.innerHTML = phrase
             result.childNodes[0].appendChild option
+
+If there were no constructors, stop here as a corner case.
+
         if not firstPhrase then return result
+
+Create the function input table for the first (and selected) constructor.
+
         result.childNodes[0].childNodes[0]?.setAttribute 'selected', yes
         table = @tableForFunction index, null, firstPhrase
-        result.appendChild table # table is actually a DIV
-        table = table.childNodes[0] # here's the actual table element
+        result.appendChild table
+
+Now we append the "Apply" button.  To do so, we first have to get the actual
+`<table>` element out of the `table` variable, which is actually a DIV at
+the moment.
+
+        table = table.childNodes[0]
         table.appendChild row = @div.ownerDocument.createElement 'tr'
         row.innerHTML = "<td></td><td align='right'>
             <input type='button' value='Apply' id='apply-button-#{index}'/>
             </td>"
+
+Here is the action that "Apply" performs.
+
         ( $ "#apply-button-#{index}", row ).click =>
+
+Find which constructor is currently selected and try to get all of its
+parameters.  This may fail if a validator fails, and if so, stop here.
+
             choice = ( $ "#ctor-select-#{index}", result ).val()
             if not ctorData = @data.constructors[choice]
                 return console.log 'Error: no such constructor:', choice
@@ -128,10 +148,17 @@ table below that choice.
                 parameters = @readAll index
             catch e
                 return alert "Fix the errors, starting with:\n\n#{e}"
+
+Construct a new command and run it on the last state in the history, thus
+creating a new state, whose DOM representation we append to the page.
+
             command = new @Command null, ctorData.call, parameters...
             @history.appendAction command
             ( $ "#apply-button-#{index}", row ).hide()
             @div.appendChild \
                 @history.states[@history.states.length-1].element
             @div.appendChild @createCommandUI @history.states.length
+
+Return the DOM that contains all the stuff created above.
+
         result
