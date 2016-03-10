@@ -15,7 +15,10 @@ Words are strings of characters in the range a-z.
             description : 'the word to add (e.g., "red" or "hamster")'
             type : 'string'
             validator : ( string ) ->
-                if /^[a-zA-Z]+$/.test string
+                if string.length is 0
+                    valid : no
+                    message : 'Words must have at least 1 letter.'
+                else if /^[a-zA-Z]+$/.test string
                     valid : yes
                 else
                     valid : no
@@ -36,6 +39,7 @@ Numbers are like words, but using characters from 0-9.
             description : 'the number to add (e.g., 0 or 43782)'
             type : 'integer'
             min : 0
+            defaultValue : 1
         }
 
     APISandbox.setup document.getElementById 'main-div'

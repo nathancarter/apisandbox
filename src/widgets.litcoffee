@@ -40,8 +40,9 @@ specify parameters when calling functions like
                 "<textarea rows=6 cols=40
                     #{idexpr}>#{type.defaultValue}</textarea>"
         result = @div.ownerDocument.createElement 'tr'
-        result.innerHTML = "<td align='right'>#{type.name}</td>
-            <td>#{right} &nbsp; <span id='#{id}-notifications'></span></td>"
+        result.innerHTML = "<td align='right' width='35%'>#{type.name}</td>
+            <td width='65%'>#{right} &nbsp;
+            <span id='#{id}-notifications'></span></td>"
         input = $ "##{id}", result
         notify = $ "##{id}-notifications", result
         validate = =>
@@ -53,8 +54,11 @@ specify parameters when calling functions like
                     validation?.message ? '--'
             else
                 notify.get( 0 ).innerHTML = validation?.message ? ''
+                input.get( 0 ).removeAttribute 'data-invalid'
         input.change validate
         input.keyup validate
+        setTimeout validate, 0
+        if type.defaultValue? then input.val type.defaultValue
         result
 
 To read data from a widget created with the above function, we use the
