@@ -1,5 +1,5 @@
 
-Enhance it so that for those that are not the last, it does this:
+Enhance Apply so that for commands that are not the last, it does this:
  * Use `replaceAction` instead of `appendAction`.
  * Remove from the DOM all the stuff after the changed state.
  * Alternate between appending DOM objects and `createCommandUI` results,
@@ -17,15 +17,6 @@ and using it.
 ```coffee
 writeDataToWidget : ( index, value ) ->
     # use getElementById() to find widget in page
-```
-
-Make APISandbox able to read UI values by implementing this function.
-```coffee
-readDataFrom : ( index ) ->
-    # converts names of objects to objects
-    # every other type of data needs no conversion
-readAllData : ->
-    # gives all widgets' results, in an array
 ```
 
 Extend the APISandbox namespace to permit registering member functions for
