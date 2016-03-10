@@ -136,8 +136,6 @@ Now we can define several convenience functions that rewrite history.
 
 ## API Sandbox Namespace
 
-The following function should be called before
-
 The following function should be called after the page loads, to let the
 API Sandbox know in which DIV of the DOM it should place its output.  You
 can also provide the visual representation of the initial state of the
