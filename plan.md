@@ -1,6 +1,6 @@
 
-Make it so that choosing a new constructor re-populates the parameter UI
-table.
+Add support for auto-populating validator functions for things like
+integers with max and min values.
 
 Enhance Apply so that for commands that are not the last, it does this:
  * Use `replaceAction` instead of `appendAction`.
@@ -94,6 +94,9 @@ HandfulOfDice(n) # constructor
 h.roll(m) # list of sums, with histogram
 h.show() # picture of n dice
 ```
+
+Add support for descriptions to show up as tooltips over input widgets
+and/or their labels.
 
 Push to GitHub.
 

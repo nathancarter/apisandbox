@@ -13,7 +13,6 @@ specify parameters when calling functions like
 [apisandbox.litcoffee](apisandbox.litcoffee).
 
     APISandbox.inputWidget = ( index, paramIndex, type ) ->
-        # This does not yet support name/description members.
         typeName = type.type
         if typeName is 'string'
             typeName += if type.long then '+' else '-'
@@ -41,7 +40,7 @@ specify parameters when calling functions like
                 "<textarea rows=6 cols=40
                     #{idexpr}>#{type.defaultValue}</textarea>"
         result = @div.ownerDocument.createElement 'tr'
-        result.innerHTML = "<td>#{type.name}</td>
+        result.innerHTML = "<td align='right'>#{type.name}</td>
             <td>#{right} &nbsp; <span id='#{id}-notifications'></span></td>"
         input = $ "##{id}", result
         notify = $ "##{id}-notifications", result
@@ -49,11 +48,11 @@ specify parameters when calling functions like
             validation = type.validator? ( $ input ).val()
             if validation?.valid is no
                 notify.get( 0 ).innerHTML =
-                    "<font color=red>#{validation.message ? ''}</font>"
+                    "<font color=red>#{validation?.message ? ''}</font>"
                 input.get( 0 ).setAttribute 'data-invalid',
-                    validation.message ? '--'
+                    validation?.message ? '--'
             else
-                notify.get( 0 ).innerHTML = validation.message ? ''
+                notify.get( 0 ).innerHTML = validation?.message ? ''
         input.change validate
         input.keyup validate
         result
@@ -92,6 +91,7 @@ a two-column table.
         table = @div.ownerDocument.createElement 'table'
         table.style.borderSpacing = '10px'
         table.style.borderCollapse = 'separate'
+        table.setAttribute 'width', '100%'
         result.appendChild table
         for parameter, i in data.parameters
             table.appendChild @inputWidget index, i, parameter
@@ -107,6 +107,7 @@ Build the drop-down menu listing all the constructors.
 
         result = @div.ownerDocument.createElement 'div'
         result.innerHTML = "<select id='ctor-select-#{index}'></select>"
+        select = $ "#ctor-select-#{index}", result
         firstPhrase = null
         for phrase, data of @data.constructors
             firstPhrase ?= phrase
@@ -122,17 +123,23 @@ Create the function input table for the first (and selected) constructor.
 
         result.childNodes[0].childNodes[0]?.setAttribute 'selected', yes
         table = @tableForFunction index, null, firstPhrase
+        table.setAttribute 'id', "parameters-for-#{index}"
         result.appendChild table
 
-Now we append the "Apply" button.  To do so, we first have to get the actual
-`<table>` element out of the `table` variable, which is actually a DIV at
-the moment.
+If the user chooses a different constructor from the list, we'll need to
+swap that parameter table out for a new one.
 
-        table = table.childNodes[0]
-        table.appendChild row = @div.ownerDocument.createElement 'tr'
-        row.innerHTML = "<td></td><td align='right'>
-            <input type='button' value='Apply' id='apply-button-#{index}'/>
-            </td>"
+        select.change =>
+            newTable = @tableForFunction index, null, select.val()
+            ( $ table ).replaceWith newTable
+            newTable.setAttribute 'id', "parameters-for-#{index}"
+
+Now we append the "Apply" button.
+
+        result.appendChild row = @div.ownerDocument.createElement 'div'
+        row.innerHTML = "<input type='button' value='Apply'
+            id='apply-button-#{index}'/>"
+        row.style.textAlign = 'right'
 
 Here is the action that "Apply" performs.
 
