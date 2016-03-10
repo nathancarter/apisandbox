@@ -1,7 +1,4 @@
 
-Add support for auto-populating validator functions for things like
-integers with max and min values.
-
 Enhance Apply so that for commands that are not the last, it does this:
  * Use `replaceAction` instead of `appendAction`.
  * Remove from the DOM all the stuff after the changed state.

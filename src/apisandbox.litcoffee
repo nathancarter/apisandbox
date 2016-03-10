@@ -181,7 +181,9 @@ Each argument must be an object with the following attributes.
  * name (a string)
  * description (a string)
  * type (a string that's one of these: integer, string, boolean, choice,
-   object, float, JSON)
+   object, float, JSON, short string, long string), with short string the
+   same as string, and long string just meaning a string that gets a big
+   input box
  * defaultValue (any value of the appropriate type)
  * validator (an optional function that returns an object with two fields,
    "valid," which is a boolean, and "message," which can explain why, and
@@ -189,8 +191,6 @@ Each argument must be an object with the following attributes.
  * min (if the type is integer or float, optional)
  * max (if the type is integer or float, optional)
  * values (an array of legal values, used only for choice types)
- * long (optional boolean, only relevant for strings, whether the string is
-   expected to be long, and thus needs a large input box in the UI)
  * object (which amounts to a special type of choice, using the object names
    in the current environment)
 

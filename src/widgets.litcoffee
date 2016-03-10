@@ -14,12 +14,14 @@ specify parameters when calling functions like
 
     APISandbox.inputWidget = ( index, paramIndex, type ) ->
         typeName = type.type
-        if typeName is 'string'
-            typeName += if type.long then '+' else '-'
         id = "input-#{index}-#{paramIndex}"
         idexpr = "id='#{id}'"
+
+Create the HTML code for the input widget, based on the data type.  Include
+the CSS ID just created above.
+
         right = switch typeName
-            when 'integer', 'float', 'string-'
+            when 'integer', 'float', 'string', 'short string'
                 "<input type='text' #{idexpr} width=40
                     value='#{type.defaultValue ? ''}'/>"
             when 'boolean'
@@ -36,17 +38,56 @@ specify parameters when calling functions like
                 "<select #{idexpr}>#{choices.join ''}</select>".replace \
                     "value='#{type.defaultValue}'",
                     "value='#{type.defaultValue}' selected"
-            when 'JSON', 'string+'
+            when 'JSON', 'long string'
                 "<textarea rows=6 cols=40
                     #{idexpr}>#{type.defaultValue}</textarea>"
+
+Create a table row and put the widget and its label inside it.  We will
+return this table row, to be placed in a table by the caller.
+
         result = @div.ownerDocument.createElement 'tr'
         result.innerHTML = "<td align='right' width='35%'>#{type.name}</td>
             <td width='65%'>#{right} &nbsp;
             <span id='#{id}-notifications'></span></td>"
+
+Now, if the type is integer or float, we need to wrap the existing validator
+function (if any) in a check to be sure that the data is even in the right
+format in the first place (an integer or a float).
+
+        validator = type.validator
+        if typeName in [ 'integer', 'float' ]
+            oldValidator = validator
+            if typeName is 'integer'
+                re = /^[+-]?[0-9]+$/
+                func = parseInt
+                phrase = 'an integer'
+            else
+                re = /^[+-]?[0-9]*\.?[0-9]+|[+-]?[0-9]+\.[0-9]*$/
+                func = parseFloat
+                phrase = 'a float'
+            validator = ( input ) ->
+                if not re.test input
+                    valid : no
+                    message : "This is not #{phrase}."
+                else
+                    value = func input
+                    if type.min? and type.min > value
+                        valid : no
+                        message : "The minimum is #{type.min}."
+                    else if type.max? and type.max < value
+                        valid : no
+                        message : "The maximum is #{type.max}."
+                    else
+                        oldValidator? value
+
+We now create the event handler which applies that validator to the
+content of the input widget whenever it changes, and updates the output
+message, if any, in the DOM.
+
         input = $ "##{id}", result
         notify = $ "##{id}-notifications", result
         validate = =>
-            validation = type.validator? ( $ input ).val()
+            validation = validator? ( $ input ).val()
             if validation?.valid is no
                 notify.get( 0 ).innerHTML =
                     "<font color=red>#{validation?.message ? ''}</font>"
@@ -55,9 +96,15 @@ specify parameters when calling functions like
             else
                 notify.get( 0 ).innerHTML = validation?.message ? ''
                 input.get( 0 ).removeAttribute 'data-invalid'
+
+Install that event handler and run it as soon as we're done here.
+
         input.change validate
         input.keyup validate
         setTimeout validate, 0
+
+Install the default value and be done.
+
         if type.defaultValue? then input.val type.defaultValue
         result
 
