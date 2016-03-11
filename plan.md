@@ -1,23 +1,9 @@
 
-Enhance Apply so that for commands that are not the last, it does this:
- * Use `replaceAction` instead of `appendAction`.
- * Remove from the DOM all the stuff after the changed state.
- * Alternate between appending DOM objects and `createCommandUI` results,
-   from the altered state onward.
-Verify that this works for any command UI on the list.
-
 Add a Cancel button on the bottom right that's visible iff Apply has been
 clicked, but then things have been modified.  What Cancel does is it
 reverses all those modifications, then hides the Apply and Cancel buttons.
 
 Add support for object types.
-
-Make APISandbox able to fill in default values by implementing this function
-and using it.
-```coffee
-writeDataToWidget : ( index, value ) ->
-    # use getElementById() to find widget in page
-```
 
 Extend the APISandbox namespace to permit registering member functions for
 classes.

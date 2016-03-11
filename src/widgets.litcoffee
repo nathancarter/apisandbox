@@ -103,6 +103,10 @@ Install that event handler and run it as soon as we're done here.
         input.keyup validate
         setTimeout validate, 0
 
+Give the input widget a class for later selection.
+
+        input.addClass 'command-ui-input'
+
 Install the default value and be done.
 
         if type.defaultValue? then input.val type.defaultValue
@@ -113,6 +117,10 @@ following routine.  Right now this is very simple, but it will be upgraded
 in the future.
 
     APISandbox.readDataFrom = ( widget ) -> ( $ widget ).val()
+
+The converse of the above operation is this.
+
+    APISandbox.writeDataTo = ( widget, value ) -> ( $ widget ).val value
 
 To read data from all widgets for a given index, use the following routine.
 
@@ -125,6 +133,14 @@ To read data from all widgets for a given index, use the following routine.
             result.push next.val()
             i++
         result
+
+The converse of teh above operation is this.
+
+    APISandbox.writeAll = ( index, values ) ->
+        for value, i in values
+            widget = $ "#input-#{index}-#{i}"
+            widget.val value
+            widget.change()
 
 The following function creates the DOM element containing all the input
 widgets (and their labels) for an entire sequence of parameters to a given
@@ -157,6 +173,7 @@ table below that choice.
 Build the drop-down menu listing all the constructors.
 
         result = @div.ownerDocument.createElement 'div'
+        result.setAttribute 'id', "command-ui-#{index}"
         result.innerHTML = "<select id='ctor-select-#{index}'></select>"
         select = $ "#ctor-select-#{index}", result
         firstPhrase = null
@@ -177,6 +194,15 @@ Create the function input table for the first (and selected) constructor.
         table.setAttribute 'id', "parameters-for-#{index}"
         result.appendChild table
 
+Now we append the "Apply" button.
+
+        result.appendChild row = @div.ownerDocument.createElement 'div'
+        row.innerHTML = "<input type='button' value='Apply'
+            id='apply-button-#{index}'/>"
+        row.style.textAlign = 'right'
+        showApply = -> ( $ "#apply-button-#{index}", result ).show()
+        hideApply = -> ( $ "#apply-button-#{index}", result ).hide()
+
 If the user chooses a different constructor from the list, we'll need to
 swap that parameter table out for a new one.
 
@@ -184,17 +210,17 @@ swap that parameter table out for a new one.
             newTable = @tableForFunction index, null, select.val()
             ( $ table ).replaceWith newTable
             newTable.setAttribute 'id', "parameters-for-#{index}"
+            showApply()
 
-Now we append the "Apply" button.
+Also, if any input changes, show the Apply button, which may be hidden by
+code below.
 
-        result.appendChild row = @div.ownerDocument.createElement 'div'
-        row.innerHTML = "<input type='button' value='Apply'
-            id='apply-button-#{index}'/>"
-        row.style.textAlign = 'right'
+        ( $ '.command-ui-input', result ).change showApply
+        ( $ '.command-ui-input', result ).keyup showApply
 
 Here is the action that "Apply" performs.
 
-        ( $ "#apply-button-#{index}", row ).click =>
+        ( $ "#apply-button-#{index}", result ).click =>
 
 Find which constructor is currently selected and try to get all of its
 parameters.  This may fail if a validator fails, and if so, stop here.
@@ -207,16 +233,33 @@ parameters.  This may fail if a validator fails, and if so, stop here.
             catch e
                 return alert "Fix the errors, starting with:\n\n#{e}"
 
-Construct a new command and run it on the last state in the history, thus
-creating a new state, whose DOM representation we append to the page.
+Construct a new command to run.
 
             command = new @Command null, ctorData.call, parameters...
-            @history.appendAction command
-            ( $ "#apply-button-#{index}", row ).hide()
-            @div.appendChild \
-                @history.states[@history.states.length-1].element
-            @div.appendChild @createCommandUI @history.states.length
 
-Return the DOM that contains all the stuff created above.
+Run that command on the appropriate state in the history.
+
+            if index is @history.states.length
+                @history.appendAction command
+            else
+                @history.changeAction index, command
+            hideApply()
+
+Clear out any content following the newly changed state.
+
+            while result.nextSibling?
+                result.parentNode.removeChild result.nextSibling
+
+Show the results of this action, plus any others that follow it later in the
+history.
+
+            for i in [index...@history.states.length]
+                @div.appendChild @history.states[i].element
+                @div.appendChild @createCommandUI i+1
+                if i+1 < @history.states.length
+                    @writeAll i+1, @history.states[i+1].command.parameters
+
+Thus ends the handler for the Apply button.  So return the DOM that contains
+all the stuff created above.
 
         result

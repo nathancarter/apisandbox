@@ -116,31 +116,36 @@ applying those commands in order to regenerate the remainder of the history.
 
         rewriteHistory : ( i, f ) =>
 
+We cannot rewrite command 0, which is always null.
+
+            if i <= 0 then return
+
 Remove and store the portion to be rewritten.
 
-            toRewrite = ( state.command for state in @states.splice i+1 )
+            toRewrite = ( state.command for state in @states.splice i )
 
 If environments are not stored, re-run all history up to `i` to regenerate
 those environments.
 
-            if @states[i].environment is null
-                for j in [1..i]
+            if @states[i-1].environment is null
+                @states[0] = new State()
+                for j in [1...i]
                     @states[j] = @states[j].command.apply @states[j-1]
 
 Continually apply items from the modified command list to rewrite history.
 
-            last = @states[i]
+            last = @states[i-1]
             for action in f toRewrite
                 @states.push last = action.apply last
 
 Now we can define several convenience functions that rewrite history.
 
         changeAction : ( i, action ) =>
-            @rewriteHistory ( oldActions ) -> [action,oldActions[1...]...]
+            @rewriteHistory i, ( olds ) -> [action,olds[1...]...]
         deleteAction : ( i ) =>
-            @rewriteHistory ( oldActions ) -> oldActions[1...]
+            @rewriteHistory i, ( olds ) -> olds[1...]
         duplicateAction : ( i ) =>
-            @rewriteHistory ( oldActions ) -> [oldActions[0],oldActions...]
+            @rewriteHistory i, ( olds ) -> [oldActions[0],olds...]
 
 ## API Sandbox Namespace
 
