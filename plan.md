@@ -1,8 +1,4 @@
 
-Add a Cancel button on the bottom right that's visible iff Apply has been
-clicked, but then things have been modified.  What Cancel does is it
-reverses all those modifications, then hides the Apply and Cancel buttons.
-
 Add support for object types.
 
 Extend the APISandbox namespace to permit registering member functions for

@@ -198,10 +198,14 @@ Now we append the "Apply" button.
 
         result.appendChild row = @div.ownerDocument.createElement 'div'
         row.innerHTML = "<input type='button' value='Apply'
-            id='apply-button-#{index}'/>"
+            id='apply-button-#{index}'/> <input type='button' value='Cancel'
+            id='cancel-button-#{index}'/>"
         row.style.textAlign = 'right'
         showApply = -> ( $ "#apply-button-#{index}", result ).show()
         hideApply = -> ( $ "#apply-button-#{index}", result ).hide()
+        showCancel = -> ( $ "#cancel-button-#{index}", result ).show()
+        hideCancel = -> ( $ "#cancel-button-#{index}", result ).hide()
+        hideCancel()
 
 If the user chooses a different constructor from the list, we'll need to
 swap that parameter table out for a new one.
@@ -212,11 +216,14 @@ swap that parameter table out for a new one.
             newTable.setAttribute 'id', "parameters-for-#{index}"
             showApply()
 
-Also, if any input changes, show the Apply button, which may be hidden by
-code below.
+Also, if any input changes, show the Apply and Cancel buttons.
 
-        ( $ '.command-ui-input', result ).change showApply
-        ( $ '.command-ui-input', result ).keyup showApply
+        ( $ '.command-ui-input', result ).change =>
+            showApply()
+            if @history.states[index]?.command? then showCancel()
+        ( $ '.command-ui-input', result ).keyup =>
+            showApply()
+            if @history.states[index]?.command? then showCancel()
 
 Here is the action that "Apply" performs.
 
@@ -244,6 +251,7 @@ Run that command on the appropriate state in the history.
             else
                 @history.changeAction index, command
             hideApply()
+            hideCancel()
 
 Clear out any content following the newly changed state.
 
@@ -259,7 +267,14 @@ history.
                 if i+1 < @history.states.length
                     @writeAll i+1, @history.states[i+1].command.parameters
 
-Thus ends the handler for the Apply button.  So return the DOM that contains
-all the stuff created above.
+Thus ends the handler for the Apply button.  The Cancel button just puts the
+UI back to the state it was in before it was last Applied.
+
+        ( $ "#cancel-button-#{index}", result ).click =>
+            @writeAll index, @history.states[index].command.parameters
+            hideApply()
+            hideCancel()
+
+So return the DOM that contains all the stuff created above.
 
         result
