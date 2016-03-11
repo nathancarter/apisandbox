@@ -17,7 +17,18 @@ div {
 }
 
 #main-div {
-    background-color: #dddddd;
     width: 1000px;
     margin: auto;
+}
+
+.command-ui {
+    border: 1px solid #bbbbbb;
+    margin: 5px;
+    border-radius: 1em;
+}
+
+.command-result {
+    border: 1px solid #aaaaff;
+    margin: 5px;
+    border-radius: 1em;
 }

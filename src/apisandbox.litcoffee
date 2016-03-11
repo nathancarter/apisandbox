@@ -49,7 +49,10 @@ needs to modify it (which most won't).
                 div = APISandbox.div.ownerDocument.createElement 'div'
                 div.innerHTML = "#{element}"
                 element = div
-            result.element = element
+            div = APISandbox.div.ownerDocument.createElement 'div'
+            div.setAttribute 'class', 'command-result'
+            div.appendChild element
+            result.element = div
             result
 
 ## State class

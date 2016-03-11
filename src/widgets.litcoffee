@@ -173,6 +173,7 @@ table below that choice.
 Build the drop-down menu listing all the constructors.
 
         result = @div.ownerDocument.createElement 'div'
+        result.setAttribute 'class', 'command-ui'
         result.setAttribute 'id', "command-ui-#{index}"
         result.innerHTML = "<select id='ctor-select-#{index}'></select>"
         select = $ "#ctor-select-#{index}", result
