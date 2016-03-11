@@ -1,12 +1,4 @@
 
-Add support for object types.
-
-Extend the APISandbox namespace to permit registering member functions for
-classes.
-```coffee
-addMember : ( className, phrase, func, args... ) ->
-```
-
 Extend the State class with
  * a member that's a mapping from class names to the list of object names
    that have those classes in this state, even if its environment is null.
@@ -15,6 +7,21 @@ Extend the State class with
    the environment is non-null.
 Call that member function from `createCommandUI` so that, below, it will be
 able to use the resulting mapping to know how to populate drop-down lists.
+
+Add support for object types.
+ * Fix the stub implementation in `inputWidget`.
+ * Upgrade `Command.apply` so that, for parameters whose type is object, it
+   takes the given value (a name string) and converts it into an object, by
+   looking it up in the environment.  This should prevent the need to
+   convert in `readDataFrom` and `writeDataTo`.
+ * Create a test constructor that takes some other object as parameter, just
+   to test this feature, even if you discard it thereafter.
+
+Extend the APISandbox namespace to permit registering member functions for
+classes.
+```coffee
+addMember : ( className, phrase, func, args... ) ->
+```
 
 Extend the command UI to permit running member functions in this form.
 ```
