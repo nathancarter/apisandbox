@@ -1,13 +1,4 @@
 
-Add support for object types.
- * Fix the stub implementation in `inputWidget`.
- * Upgrade `Command.apply` so that, for parameters whose type is object, it
-   takes the given value (a name string) and converts it into an object, by
-   looking it up in the environment.  This should prevent the need to
-   convert in `readDataFrom` and `writeDataTo`.
- * Create a test constructor that takes some other object as parameter, just
-   to test this feature, even if you discard it thereafter.
-
 Extend the APISandbox namespace to permit registering member functions for
 classes.
 ```coffee

@@ -43,8 +43,13 @@ needs to modify it (which most won't).
             if result.environment is null
                 result.environment = state.environment
                 state.environment = null
+            parameters = for parameter in @parameters
+                if 'name' of parameter
+                    state.environment[parameter.name]
+                else
+                    parameter.value
             element = @method.apply result.environment[@objectName],
-                [ @parameters..., result.environment ]
+                [ parameters..., result.environment ]
             if element not instanceof window.Node
                 div = APISandbox.div.ownerDocument.createElement 'div'
                 div.innerHTML = "#{element}"
@@ -219,9 +224,10 @@ Each argument must be an object with the following attributes.
  * name (a string)
  * description (a string)
  * type (a string that's one of these: integer, string, boolean, choice,
-   object, float, JSON, short string, long string), with short string the
+   object:C, float, JSON, short string, long string), with short string the
    same as string, and long string just meaning a string that gets a big
-   input box
+   input box, and C the name of any class, as in object:Employee or
+   object:Widget
  * defaultValue (any value of the appropriate type)
  * validator (an optional function that returns an object with two fields,
    "valid," which is a boolean, and "message," which can explain why, and
@@ -229,8 +235,6 @@ Each argument must be an object with the following attributes.
  * min (if the type is integer or float, optional)
  * max (if the type is integer or float, optional)
  * values (an array of legal values, used only for choice types)
- * object (which amounts to a special type of choice, using the object names
-   in the current environment)
 
     APISandbox.addConstructor = ( phrase, func, parameters... ) ->
         ( ( @data ?= { } ).constructors ?= { } )[phrase] =

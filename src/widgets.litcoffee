@@ -20,6 +20,11 @@ specify parameters when calling functions like
 Create the HTML code for the input widget, based on the data type.  Include
 the CSS ID just created above.
 
+        if typeName[...7] is 'object:'
+            className = typeName[7..]
+            typeName = 'object'
+        else
+            className = null
         right = switch typeName
             when 'integer', 'float', 'string', 'short string'
                 "<input type='text' #{idexpr} width=40
@@ -28,11 +33,14 @@ the CSS ID just created above.
                 onoff = if type.defaultValue then 'selected' else ''
                 "<input type='checkbox' #{idexpr} #{onoff}/>"
             when 'choice', 'object'
-                choices = if typeName is 'choice'
-                    type.values
+                if typeName is 'choice'
+                    choices = type.values
                 else
-                    [ 'cannot', 'yet', 'populate', 'object', 'lists',
-                      '...', 'come', 'back', 'later' ]
+                    state = @history.states[index-1]?.objectsInClass
+                    choices = [ ]
+                    for own cname, onames of state ? { }
+                        if not className? or className is cname
+                            choices = choices.concat onames
                 choices = ( "<option value='#{c}'>#{c}</option>" \
                     for c in choices )
                 "<select #{idexpr}>#{choices.join ''}</select>".replace \
@@ -248,7 +256,12 @@ parameters.  This may fail if a validator fails, and if so, stop here.
 
 Construct a new command to run.
 
-            command = new @Command null, ctorData.call, parameters...
+            encodedParameters = for paramData, i in ctorData.parameters
+                if paramData.type is 'object'
+                    name : parameters[i]
+                else
+                    value : parameters[i]
+            command = new @Command null, ctorData.call, encodedParameters...
 
 Run that command on the appropriate state in the history.
 
