@@ -147,7 +147,7 @@ The converse of the above operation is this.
     APISandbox.writeAll = ( index, values ) ->
         for value, i in values
             widget = $ "#input-#{index}-#{i}"
-            widget.val value
+            widget.val value.name ? value.value ? value
             widget.change()
 
 The following function creates the DOM element containing all the input
