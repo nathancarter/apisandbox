@@ -1,10 +1,4 @@
 
-Extend the APISandbox namespace to permit registering member functions for
-classes.
-```coffee
-addMember : ( className, phrase, func, args... ) ->
-```
-
 Extend the command UI to permit running member functions in this form.
 ```
 [Use OBJECT-NAME] [MEMBER-FUNC-PHRASE]

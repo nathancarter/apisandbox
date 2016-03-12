@@ -240,3 +240,15 @@ Each argument must be an object with the following attributes.
         ( ( @data ?= { } ).constructors ?= { } )[phrase] =
             call : func
             parameters : parameters
+
+The following function works just like the previous, but it's for adding
+member functions for a class, rather than the class's constructor.  The
+first parameter is the name of the class given in the call to `addClass`,
+defined above.  The other three parameters work just like those for
+`addConstructor`.
+
+    APISandbox.addMethod = ( className, phrase, func, parameters... ) ->
+        ( @data ?= { } ).members ?= { }
+        ( @data.members[className] ?= { } )[phrase] =
+            call : func
+            parameters : parameters

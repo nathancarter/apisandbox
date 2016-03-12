@@ -1,5 +1,20 @@
 
-Set up the demo.
+# API Sandbox Tiny Demo
+
+This function finds the first letter not used as a key in a given object.
+
+    nextUnusedLetter = ( object ) ->
+        letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        index = 0
+        suffix = 0
+        candidate = ->
+            "#{letters[index]}#{if suffix > 0 then suffix else ''}"
+        while candidate() of object
+            index++
+            if index is letters.length
+                index = 0
+                suffix++
+        candidate()
 
 Words are strings of characters in the range a-z.
 
@@ -7,8 +22,9 @@ Words are strings of characters in the range a-z.
         ( x ) -> typeof( x ) is 'string' and /^[a-zA-Z]*$/.test x
     APISandbox.addConstructor 'Add a word',
         ( word, environment ) ->
-            environment[word] = word
-            "Created this new word: #{word}."
+            key = nextUnusedLetter environment
+            environment[key] = word
+            "Let #{key} stand for the word \"#{word}.\""
     ,
         name : 'the word to add'
         description : 'the word to add (e.g., "red" or "hamster")'
@@ -29,14 +45,18 @@ Numbers are like words, but using characters from 0-9.
         ( x ) -> typeof( x ) in [ 'string', 'number' ] and /^[0-9]+$/.test x
     APISandbox.addConstructor 'Add a number',
         ( number, environment ) ->
-            environment[number] = parseInt number
-            "Created this new number: #{number}."
+            key = nextUnusedLetter environment
+            environment[key] = parseInt number
+            "Let #{key} stand for the number #{number}."
     ,
         name : 'the number to add'
         description : 'the number to add (e.g., 0 or 43782)'
         type : 'integer'
         min : 0
         defaultValue : 1
+    APISandbox.addMethod 'Number', 'compute its square',
+        ( name, environment ) ->
+            "Squaring #{name} gives #{environment[name]*environment[name]}."
 
 This is rather a silly class, mostly for testing purposes, but I leave it
 here to show how to use object-type parameters.
@@ -44,9 +64,11 @@ here to show how to use object-type parameters.
     APISandbox.addClass 'Number copy', 'A copy of a number',
         ( x ) -> typeof( x ) is 'string' and /^copy of [0-9]+$/.test x
     APISandbox.addConstructor 'Copy a number',
-        ( number, environment ) ->
-            environment["copy of #{number}"] = "copy of #{number}"
-            "Copied this number: #{number}."
+        ( name, environment ) ->
+            key = nextUnusedLetter environment
+            environment[key] = environment[name]
+            "Let #{key} be a copy of #{name}, which is the number
+             #{environment[name]}."
     ,
         name : 'the existing number to copy'
         description : 'this must be a number you\'ve already created'
