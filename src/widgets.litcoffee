@@ -142,7 +142,7 @@ To read data from all widgets for a given index, use the following routine.
             i++
         result
 
-The converse of teh above operation is this.
+The converse of the above operation is this.
 
     APISandbox.writeAll = ( index, values ) ->
         for value, i in values
@@ -202,9 +202,11 @@ If there were no constructors, stop here as a corner case.
         if not firstPhrase then return result
 
 Create the function input table for the first (and selected) constructor.
+For now, this is an empty DIV, but we will run a routine below that
+populates it.
 
         result.childNodes[0].childNodes[0]?.setAttribute 'selected', yes
-        table = @tableForFunction index, null, firstPhrase
+        table = @div.ownerDocument.createElement 'div'
         table.setAttribute 'id', "parameters-for-#{index}"
         result.appendChild table
 
@@ -222,22 +224,22 @@ Now we append the "Apply" button.
         hideCancel()
 
 If the user chooses a different constructor from the list, we'll need to
-swap that parameter table out for a new one.
+swap that parameter table out for a new one.  Here's the method for doing
+so, and we run it once now, to initially populate the parameter table.
 
         select.change =>
             newTable = @tableForFunction index, null, select.val()
             ( $ table ).replaceWith newTable
             newTable.setAttribute 'id', "parameters-for-#{index}"
+            table = newTable
+            ( $ '.command-ui-input', result ).change =>
+                showApply()
+                if @history.states[index]?.command? then showCancel()
+            ( $ '.command-ui-input', result ).keyup =>
+                showApply()
+                if @history.states[index]?.command? then showCancel()
             showApply()
-
-Also, if any input changes, show the Apply and Cancel buttons.
-
-        ( $ '.command-ui-input', result ).change =>
-            showApply()
-            if @history.states[index]?.command? then showCancel()
-        ( $ '.command-ui-input', result ).keyup =>
-            showApply()
-            if @history.states[index]?.command? then showCancel()
+        select.change()
 
 Here is the action that "Apply" performs.
 
