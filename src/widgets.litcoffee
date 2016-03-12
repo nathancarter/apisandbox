@@ -170,6 +170,11 @@ table below that choice.
 
     APISandbox.createCommandUI = ( index ) ->
 
+First, ensure that the previous state has the relevant data pre-computed, so
+that we can populate drop-down menus in widgets for this action.
+
+        @history.states[index-1]?.computeObjectsInClass?()
+
 Build the drop-down menu listing all the constructors.
 
         result = @div.ownerDocument.createElement 'div'

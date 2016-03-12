@@ -1,13 +1,4 @@
 
-Extend the State class with
- * a member that's a mapping from class names to the list of object names
-   that have those classes in this state, even if its environment is null.
-   This is JSON.
- * a member function that computes this mapping and stores it, provided that
-   the environment is non-null.
-Call that member function from `createCommandUI` so that, below, it will be
-able to use the resulting mapping to know how to populate drop-down lists.
-
 Add support for object types.
  * Fix the stub implementation in `inputWidget`.
  * Upgrade `Command.apply` so that, for parameters whose type is object, it

@@ -4,7 +4,7 @@ Set up the demo.
 Words are strings of characters in the range a-z.
 
     APISandbox.addClass 'Word', 'A string of characters',
-        ( x ) -> typeof( x ) is 'string'
+        ( x ) -> typeof( x ) is 'string' and /^[a-zA-Z]*$/.test x
     APISandbox.addConstructor 'Add a word',
         ( word, environment ) ->
             environment[word] = word
@@ -28,7 +28,9 @@ Words are strings of characters in the range a-z.
 Numbers are like words, but using characters from 0-9.
 
     APISandbox.addClass 'Number', 'A string of digits',
-        ( x ) -> typeof( x ) in [ 'string', 'number' ]
+        ( x ) ->
+            if typeof( x ) not in [ 'string', 'number' ] then return no
+            try value = parseInt x ; return yes catch e then return no
     APISandbox.addConstructor 'Add a number',
         ( number, environment ) ->
             environment[number] = parseInt number

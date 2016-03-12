@@ -70,12 +70,42 @@ cases, as described later in this file.
 
 The element is the DOM element representing this state.
 
+The `objectsInClass` member is documented in the function that computes it,
+`computeObjectsInClass`, below.
+
         constructor : ( @command = null ) ->
             @environment = { }
             @element = null
+            @objectsInClass = null
+
+The `objectsInClass` member maps each class name defined in the `APISandbox`
+global to a list of names of objects in this state's `environment` that have
+that class.  Although this can be compjuted from a state, that is only true
+if the state has a non-null `environment`.  Otherwise, we will want to have
+this information cached, so that we can look it up when the `environment` is
+unavailable.
+
+        computeObjectsInClass : =>
+
+We cannot do this if the `environment` is null.  We don't have to bother to
+do it if we've already done it.
+
+            if @environment is null then return @objectsInClass = null
+            if @objectsInClass isnt null then return
+
+Loop through all objects in the environment, applying the characteristic
+function for each class to it until you discover which it is, then record
+the result.
+
+            @objectsInClass = { }
+            for own oname, object of @environment
+                for own cname, info of APISandbox.data?.classes ? { }
+                    if info.isAnInstance object
+                        ( @objectsInClass[cname] ?= [ ] ).push oname
+                        break
 
 Copying a state does not copy the command that generated it nor the DOM
-element that represents it (leaving both null), but attempts to copy the
+element that represents it (leaving both null).  It attempts to copy the
 contents of the environment, if they can be copied, either using a `copy`
 member function, or by treating the data as JSON.
 
