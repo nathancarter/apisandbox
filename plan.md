@@ -1,7 +1,4 @@
 
-Bug:  Changing the method to call doesn't update the parameters table, nor
-the apply/cancel button visibility.
-
 Create a Clear button that clears the contents of the page.
 
 Add a medium Example, using an SVG toolkit like [Snap](http://snapsvg.io),

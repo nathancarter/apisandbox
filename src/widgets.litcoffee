@@ -314,18 +314,7 @@ If the user chooses a different constructor from the list, we'll need to
 swap that parameter table out for a new one.  Here's the method for doing
 so, and we run it once now, to initially populate the parameter table.
 
-        select.change =>
-            choice = select.val()
-            canApply = yes
-            if @data.constructors?[choice]?
-                hideMethods()
-                newTable = @tableForFunction index, null, choice
-            else
-                fillMethods choice
-                showMethods()
-                method = ( $ methods ).val()
-                newTable = @tableForFunction index, choice, method
-                canApply = method isnt ''
+        updateParameterTable = ( newTable ) =>
             ( $ table ).replaceWith newTable
             newTable.setAttribute 'id', "parameters-for-#{index}"
             table = newTable
@@ -335,7 +324,27 @@ so, and we run it once now, to initially populate the parameter table.
             ( $ '.command-ui-input', result ).keyup =>
                 showApply()
                 if @history.states[index]?.command? then showCancel()
-            if canApply then showApply() else hideApply()
+        ( $ methods ).change =>
+            method = ( $ methods ).val()
+            updateParameterTable @tableForFunction index, select.val(),
+                method
+            if method isnt ''
+                showApply()
+                if @history.states[index]?.command? then showCancel()
+            else
+                hideApply()
+                hideCancel()
+        select.change =>
+            choice = select.val()
+            if @data.constructors?[choice]?
+                hideMethods()
+                updateParameterTable @tableForFunction index, null, choice
+                showApply()
+                if @history.states[index]?.command? then showCancel()
+            else
+                fillMethods choice
+                showMethods()
+                ( $ methods ).change()
         select.change()
 
 The apply and delete functions both use the following function to update the
