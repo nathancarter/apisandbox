@@ -27,11 +27,12 @@ the CSS ID just created above.
             className = null
         right = switch typeName
             when 'integer', 'float', 'string', 'short string'
-                "<input type='text' #{idexpr} width=40
+                "<input type='text' #{idexpr} width=40 class='form-control'
                     value='#{type.defaultValue ? ''}'/>"
             when 'boolean'
                 onoff = if type.defaultValue then 'selected' else ''
-                "<input type='checkbox' #{idexpr} #{onoff}/>"
+                "<input type='checkbox' #{idexpr} #{onoff}
+                 class='form-control'/>"
             when 'choice', 'object'
                 if typeName is 'choice'
                     choices = type.values
@@ -43,19 +44,19 @@ the CSS ID just created above.
                             choices = choices.concat onames
                 choices = ( "<option value='#{c}'>#{c}</option>" \
                     for c in choices )
-                "<select #{idexpr}>#{choices.join ''}</select>".replace \
-                    "value='#{type.defaultValue}'",
+                "<select #{idexpr} class='form-control'>#{choices.join ''}
+                 </select>".replace "value='#{type.defaultValue}'",
                     "value='#{type.defaultValue}' selected"
             when 'JSON', 'long string'
-                "<textarea rows=6 cols=40
+                "<textarea rows=6 cols=40 class='form-control'
                     #{idexpr}>#{type.defaultValue}</textarea>"
 
 Create a table row and put the widget and its label inside it.  We will
 return this table row, to be placed in a table by the caller.
 
         result = @div.ownerDocument.createElement 'tr'
-        result.innerHTML = "<td align='right' width='35%'>#{type.name}</td>
-            <td width='65%'>#{right} &nbsp;
+        result.innerHTML = "<td align='right' width='35%'><label
+            >#{type.name}</label></td><td width='65%'>#{right} &nbsp;
             <span id='#{id}-notifications'></span></td>"
 
 Now, if the type is integer or float, we need to wrap the existing validator
@@ -231,7 +232,8 @@ Build the drop-down menu listing all the constructors and objects.
         result = @div.ownerDocument.createElement 'div'
         result.setAttribute 'class', 'command-ui'
         result.setAttribute 'id', "command-ui-#{index}"
-        result.innerHTML = "<select id='ctor-select-#{index}'></select>"
+        result.innerHTML = "<select id='ctor-select-#{index}'
+            class='form-control' style='width: 90%;'></select>"
         select = $ "#ctor-select-#{index}", result
         for cname, objects of @history.states[index-1]?.objectsInClass ? { }
             for object in objects
@@ -255,6 +257,8 @@ choose the method within that object that they wish to invoke.
 
         methods = @div.ownerDocument.createElement 'select'
         methods.setAttribute 'id', "method-select-#{index}"
+        methods.setAttribute 'class', 'form-control'
+        methods.style.width = '90%'
         select.after methods
         hideMethods = -> ( $ methods ).hide()
         showMethods = -> ( $ methods ).show()
@@ -291,7 +295,9 @@ Now we append the "Apply" button.
 
         result.appendChild row = @div.ownerDocument.createElement 'div'
         row.innerHTML = "<input type='button' value='Apply'
-            id='apply-button-#{index}'/> <input type='button' value='Cancel'
+            class='btn btn-default btn-primary' id='apply-button-#{index}'/>
+            <input type='button' value='Cancel'
+            class='btn btn-default btn-warning'
             id='cancel-button-#{index}'/>"
         row.style.textAlign = 'right'
         showApply = -> ( $ "#apply-button-#{index}", result ).show()
