@@ -158,13 +158,15 @@ invoked.  This command does so.
     APISandbox.restoreSelects = ( index ) ->
         command = @history.states[index].command
 
-First, show the X in the top right of the command UI iff it is not the
+First, show the buttons in the top right of the command UI iff it is not the
 last command UI.
 
         if index < @history.states.length
-            ( $ "#delete-command-#{index}" ).parent().show()
+            ( $ "#delete-command-#{index}" ).show()
+            ( $ "#duplicate-command-#{index}" ).show()
         else
-            ( $ "#delete-command-#{index}" ).parent().hide()
+            ( $ "#delete-command-#{index}" ).hide()
+            ( $ "#duplicate-command-#{index}" ).hide()
 
 For the first drop-down, if the function was invoked on an object, select
 the object's name in the drop-down.
@@ -243,7 +245,7 @@ Build the drop-down menu listing all the constructors and objects.
         result.setAttribute 'class', 'command-ui'
         result.setAttribute 'id', "command-ui-#{index}"
         result.innerHTML = "<select id='ctor-select-#{index}'
-            class='form-control' style='width: 90%;'></select>"
+            class='form-control' style='width: 80%;'></select>"
         select = $ "#ctor-select-#{index}", result
         for cname, objects of @history.states[index-1]?.objectsInClass ? { }
             for object in objects
@@ -268,7 +270,7 @@ choose the method within that object that they wish to invoke.
         methods = @div.ownerDocument.createElement 'select'
         methods.setAttribute 'id', "method-select-#{index}"
         methods.setAttribute 'class', 'form-control'
-        methods.style.width = '90%'
+        methods.style.width = '80%'
         select.after methods
         hideMethods = -> ( $ methods ).hide()
         showMethods = -> ( $ methods ).show()
@@ -373,19 +375,28 @@ history.
                 ( $ "#cancel-button-#{i}", @div ).hide()
 
 Insert into this result DIV a floating X in the top-right corner, for
-deleting the command.
+deleting the command.  Also add a duplicate button.
 
-        deleteX = @div.ownerDocument.createElement 'div'
-        deleteX.style.float = 'right'
-        deleteX.innerHTML = "<button type='button'
+        float = @div.ownerDocument.createElement 'div'
+        float.style.float = 'right'
+        float.innerHTML = "<button type='button'
             id='delete-command-#{index}'
             class='btn btn-danger btn-sm'><span class='glyphicon
-            glyphicon-remove'></span></button>"
-        result.insertBefore deleteX, result.childNodes[0]
-        ( $ "#delete-command-#{index}", result ).click =>
+            glyphicon-remove'></span></button><button type='button'
+            id='duplicate-command-#{index}'
+            class='btn btn-default btn-sm'><span class='glyphicon
+            glyphicon-plus'></span></button>"
+        result.insertBefore float, result.childNodes[0]
+        deleteX = float.childNodes[0]
+        ( $ deleteX ).click =>
             @history.deleteAction index
             updateViewAfter yes
         ( $ deleteX ).hide()
+        duplicate = float.childNodes[1]
+        ( $ duplicate ).click =>
+            @history.duplicateAction index
+            updateViewAfter()
+        ( $ duplicate ).hide()
 
 Here is the action that "Apply" performs.
 
@@ -427,9 +438,10 @@ Run that command on the appropriate state in the history.
             hideCancel()
             updateViewAfter()
 
-Once this command has been applied, it can be deleted.
+Once this command has been applied, it can be deleted or duplicated.
 
             ( $ deleteX ).show()
+            ( $ duplicate ).show()
 
 Thus ends the handler for the Apply button.  The Cancel button just puts the
 UI back to the state it was in before it was last Applied.

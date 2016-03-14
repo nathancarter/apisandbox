@@ -1,8 +1,4 @@
 
-Extend each command UI with a "duplicate" button in the top right that
-duplicates the command, by calling `duplicateAction` and then repopulating
-the view DIV, much like the previous task.
-
 Extend the History class with these two members
  * `encode()` serializes the list of commands to a query string, without any
    environments or anything else (they would need to be recomputed)

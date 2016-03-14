@@ -189,7 +189,7 @@ Now we can define several convenience functions that rewrite history.
         deleteAction : ( i ) =>
             @rewriteHistory i, ( olds ) -> olds[1...]
         duplicateAction : ( i ) =>
-            @rewriteHistory i, ( olds ) -> [oldActions[0],olds...]
+            @rewriteHistory i, ( olds ) -> [olds[0],olds...]
 
 ## API Sandbox Namespace
 
