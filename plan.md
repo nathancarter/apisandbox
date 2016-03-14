@@ -1,14 +1,4 @@
 
-Extend the demo with these functions.
-```
-w.reverse() # changes w to its reverse
-w.sort() # sorts the letters of w alphabetically
-w.facts() # prints facts/links about w
-```
-
-Ensure that Command instances are correctly created from this new UI.
-Verify that everything therefore runs correctly, even with member functions.
-
 Extend the APISandbox namespace to permit registering global objects.
 ```coffee
 addGlobal : ( name, desc, object ) ->

@@ -39,6 +39,28 @@ Words are strings of characters in the range a-z.
             else
                 valid : no
                 message : 'Only the letters a-z are allowed.'
+    APISandbox.addMethod 'Word', 'reverse it',
+        ( name, environment ) ->
+            string = environment[name]
+            reverse = ( string[string.length-1-i] \
+                for i in [0...string.length] ).join ''
+            environment[name] = reverse
+            "Reversing #{name} gives #{reverse}.  Thus #{name} now stands
+             for #{reverse}."
+    APISandbox.addMethod 'Word', 'sort its letters into alphabetical order',
+        ( name, environment ) ->
+            string = environment[name]
+            array = ( string[i] for i in [0...string.length] )
+            array.sort()
+            environment[name] = array.join ''
+            "Sorting the letters of #{name} into alphabetical order gives
+             #{environment[name]}.  Thus #{name} now stands for
+             #{environment[name]}."
+    APISandbox.addMethod 'Word', 'look it up on Wikipedia',
+        ( name, environment ) ->
+            "Click <a target='_blank'
+             href='http://en.wikipedia.org/wiki/#{environment[name]}'
+             >here</a> to look up #{environment[name]} on Wikipedia."
 
 Numbers are like words, but using characters from 0-9.
 
@@ -57,7 +79,8 @@ Numbers are like words, but using characters from 0-9.
         defaultValue : 1
     APISandbox.addMethod 'Number', 'compute its square',
         ( name, environment ) ->
-            "Squaring #{name} gives #{environment[name]*environment[name]}."
+            "Squaring #{name} gives #{environment[name]*environment[name]}.
+             (But #{name} still continues to mean #{environment[name]}.)"
 
 This is rather a silly class, mostly for testing purposes, but I leave it
 here to show how to use object-type parameters.
