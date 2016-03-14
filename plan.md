@@ -1,9 +1,4 @@
 
-Extend the History class with these two members
- * `encode()` serializes the list of commands to a query string, without any
-   environments or anything else (they would need to be recomputed)
- * `decode()` deserializes a query string into a history object and runs all
-   the commands to regenerate everything else
 Extend the APISandbox namespace with two corresponding functions.
  * `permalink()` that creates a link to the current page, but with the query
    string encoding the results of `history.encode()`.

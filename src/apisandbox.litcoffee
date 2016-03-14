@@ -206,6 +206,46 @@ Now we can define several convenience functions that rewrite history.
         duplicateAction : ( i ) =>
             @rewriteHistory i, ( olds ) -> [olds[0],olds...]
 
+Histories can also serialize themselves, into a string, for use when making
+permalinks.  (The result of this should be passed through
+`encodeURIComponent` if you plan to use it in a query string.)
+
+        serialize : =>
+            array = for state in @states[1..]
+                if state.command.objectName?
+                    mn = state.command.methodName()
+                    [ "m #{state.command.objectName}", mn.className,
+                      mn.phrase, state.command.parameters... ]
+                else
+                    [ "c #{state.command.constructorName()}",
+                      state.command.parameters... ]
+            JSON.stringify array
+
+Histories can do the inverse as well, taking a serialized set of states and
+conforming themselves to that history.  This means obliterating everything
+in the history at present, and replacing it with the serlialized record.
+This involves a complete recomputation of everything from the history, which
+is only stored as the commands that were run, not as their results.
+
+        deserialize : ( encoded ) =>
+            @states = [ APISandbox.initialState() ]
+            for encodedState in JSON.parse encoded
+                command = if encodedState[0][...2] is 'm '
+                    objectName = encodedState[0][2..]
+                    className = encodedState[1]
+                    methodPhrase = encodedState[2]
+                    parameters = encodedState[3..]
+                    new Command objectName,
+                        APISandbox.data.members[className][methodPhrase] \
+                            .call, parameters...
+                else
+                    constructorName = encodedState[0][2..]
+                    parameters = encodedState[1..]
+                    new Command null,
+                        APISandbox.data.constructors[constructorName].call,
+                        parameters...
+                @appendAction command
+
 ## API Sandbox Namespace
 
 The following function should be called after the page loads, to let the
