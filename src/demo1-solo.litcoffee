@@ -82,21 +82,28 @@ Numbers are like words, but using characters from 0-9.
             "Squaring #{name} gives #{environment[name]*environment[name]}.
              (But #{name} still continues to mean #{environment[name]}.)"
 
-This is rather a silly class, mostly for testing purposes, but I leave it
-here to show how to use object-type parameters.
+The following code was only used for testing, but is useful to show how
+the following two features can be set up.
 
-    APISandbox.addClass 'Number copy', 'A copy of a number',
-        ( x ) -> typeof( x ) is 'string' and /^copy of [0-9]+$/.test x
-    APISandbox.addConstructor 'Copy a number',
-        ( name, environment ) ->
-            key = nextUnusedLetter environment
-            environment[key] = environment[name]
-            "Let #{key} be a copy of #{name}, which is the number
-             #{environment[name]}."
-    ,
-        name : 'the existing number to copy'
-        description : 'this must be a number you\'ve already created'
-        type : 'object:Number'
+Global objects:
+
+    # APISandbox.addGlobal 'TheAnswer', 'The answer to life, the universe,
+    #     and everything', 42
+
+Object-type parameters:
+
+    # APISandbox.addClass 'Number copy', 'A copy of a number',
+    #     ( x ) -> typeof( x ) is 'string' and /^copy of [0-9]+$/.test x
+    # APISandbox.addConstructor 'Copy a number',
+    #     ( name, environment ) ->
+    #         key = nextUnusedLetter environment
+    #         environment[key] = environment[name]
+    #         "Let #{key} be a copy of #{name}, which is the number
+    #          #{environment[name]}."
+    # ,
+    #     name : 'the existing number to copy'
+    #     description : 'this must be a number you\'ve already created'
+    #     type : 'object:Number'
 
 Set the whole system up, using the data above.
 

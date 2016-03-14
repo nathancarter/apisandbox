@@ -1,12 +1,4 @@
 
-Extend the APISandbox namespace to permit registering global objects.
-```coffee
-addGlobal : ( name, desc, object ) ->
-    # can detect its class using chi for each class
-```
-Test by adding an example global to the Words demo.  E.g., the word
-"example."
-
 Extend each command UI with an X in the top right that deletes the command,
 by calling `deleteAction` and then repopulating the view DIV, much like
 `changeAction` does.

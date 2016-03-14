@@ -138,7 +138,7 @@ generated it) and which has no environment or DOM elements showing it.
 (But DOM elements could be inserted later if desired.)
 
         constructor : ->
-            @states = [ new State() ]
+            @states = [ APISandbox.initialState() ]
 
 The easiest operation we can do is append an action to the history, which
 creates a new state based on the last one.  Here we assume that `action` is
@@ -167,7 +167,7 @@ If environments are not stored, re-run all history up to `i` to regenerate
 those environments.
 
             if @states[i-1].environment is null
-                @states[0] = new State()
+                @states[0] = APISandbox.initialState()
                 for j in [1...i]
                     @states[j] = @states[j].command.apply @states[j-1]
 
@@ -253,3 +253,21 @@ defined above.  The other three parameters work just like those for
         ( @data.members[className] ?= { } )[phrase] =
             call : func
             parameters : parameters
+
+The following function permits the insertion of global objects into the
+environment, which means that they exist before any commands have been run;
+they are part of the initial state.
+
+    APISandbox.addGlobal = ( name, description, object ) ->
+        ( ( @data ?= { } ).globals ?= { } )[name] =
+            description : description
+            value : object
+
+We therefore provide the following convenience function for constructing an
+initial state, which will include the globals.
+
+    APISandbox.initialState = ->
+        result = new State()
+        for own key, value of @data?.globals ? { }
+            result.environment[key] = value.value
+        result
