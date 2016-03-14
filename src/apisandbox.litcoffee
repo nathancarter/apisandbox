@@ -66,6 +66,21 @@ Upgrade the result to an element, if it wasn't one already, and return it.
             result.element = div
             result
 
+Commands can also look themselves up in the global `APISandbox` data
+structure, to find out their names, as either methods or constructors.
+
+        constructorName : =>
+            for own phrase, data of APISandbox.data.constructors ? { }
+                if data.call is @method
+                    return phrase
+            return null
+        methodName : =>
+            for own className, bigdata of APISandbox.data.members ? { }
+                for own phrase, data of bigdata
+                    if data.call is @method
+                        return className : className, phrase : phrase
+            return null
+
 ## State class
 
     APISandbox.State = State = class State

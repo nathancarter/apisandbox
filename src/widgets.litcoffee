@@ -184,26 +184,18 @@ the object's name in the drop-down.
 Also, since this was a method invoked on an object, we must select the
 method from the second drop-down.  Also, show the second drop-down.
 
-            success = no
-            for own className, bigdata of @data.members ? { }
-                for own phrase, data of bigdata
-                    if data.call is command.method
-                        methods.val phrase
-                        methods.change()
-                        success = yes
-                        break
             methods.show()
-            if methods.val()? then return
+            if ( methName = command.methodName() )?
+                methods.val methName.phrase
+                methods.change()
+                return
 
 Otherwise look for the command's function among the list of constructors.
 If you find it, choose that constructor from the list.  Then hide the
 methods drop-down.
 
-        for own phrase, data of @data.constructors ? { }
-            if data.call is command.method
-                choices.val phrase
-                choices.change()
-                break
+        choices.val command.constructorName()
+        choices.change()
         methods.hide()
 
 The following function creates the DOM element containing all the input
