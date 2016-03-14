@@ -1,12 +1,6 @@
 
-Extend the APISandbox namespace with two corresponding functions.
- * `permalink()` that creates a link to the current page, but with the query
-   string encoding the results of `history.encode()`.
- * Extend the `setup()` function so that it checks the query string and, if
-   it contains content that passes successfully through `history.decode()`,
-   fill the view DIV with the representations of all the history's states.
-Create a Permalink button that navigates to the permalink.  Probably it
-belongs in the title bar.
+Bug:  Changing the method to call doesn't update the parameters table, nor
+the apply/cancel button visibility.
 
 Create a Clear button that clears the contents of the page.
 

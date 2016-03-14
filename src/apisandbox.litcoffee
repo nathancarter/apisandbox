@@ -208,7 +208,8 @@ Now we can define several convenience functions that rewrite history.
 
 Histories can also serialize themselves, into a string, for use when making
 permalinks.  (The result of this should be passed through
-`encodeURIComponent` if you plan to use it in a query string.)
+`encodeURIComponent` if you plan to use it in a query string.  See
+`APISandbox.permalink`, below.)
 
         serialize : =>
             array = for state in @states[1..]
@@ -262,6 +263,11 @@ sandbox, as an HTML string.
             @div.removeChild @div.lastChild
         @div.appendChild init.DOM
         @div.appendChild @createCommandUI 1
+
+We then call the following function, which is defined in
+`widgets.litcoffee`.  This is a bit of a hack, sorry.
+
+        @handlePermalink()
 
 Call this function to inform the API Sandbox about a new class.  Provide its
 name and description as strings, and a characteristic function `chi` that
@@ -331,3 +337,9 @@ initial state, which will include the globals.
         for own key, value of @data?.globals ? { }
             result.environment[key] = value.value
         result
+
+Fetch a permalink to the current computation history with this method.
+
+    APISandbox.permalink = ->
+        currentURL = window.location.href.split( '?' )[0]
+        "#{currentURL}?#{encodeURIComponent @history.serialize()}"

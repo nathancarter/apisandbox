@@ -383,11 +383,13 @@ deleting the command.  Also add a duplicate button.
         ( $ deleteX ).click =>
             @history.deleteAction index
             updateViewAfter yes
+            @updatePermalinkElement()
         ( $ deleteX ).hide()
         duplicate = float.childNodes[1]
         ( $ duplicate ).click =>
             @history.duplicateAction index
             updateViewAfter()
+            @updatePermalinkElement()
         ( $ duplicate ).hide()
 
 Here is the action that "Apply" performs.
@@ -429,6 +431,7 @@ Run that command on the appropriate state in the history.
             hideApply()
             hideCancel()
             updateViewAfter()
+            @updatePermalinkElement()
 
 Once this command has been applied, it can be deleted or duplicated.
 
@@ -447,3 +450,44 @@ UI back to the state it was in before it was last Applied.
 So return the DOM that contains all the stuff created above.
 
         result
+
+If the user navigated to this page via a permalink, we can set up the UI
+in response to that permalink now.  This should only be called by
+`APISandbox.setup`, not after any computation has been done.
+
+    APISandbox.handlePermalink = ->
+        queryString = window.location.href.split( '?' )[1]
+        if queryString is '' or queryString is null then return
+        queryString = decodeURIComponent queryString
+        if queryString is '' or queryString is null then return
+        try
+            JSON.parse queryString
+        catch e
+            return
+        @history.deserialize queryString
+        for state, index in @history.states
+            if index > 0
+                @div.appendChild state.element
+                @div.appendChild @createCommandUI index+1
+            if index < @history.states.length - 1
+                @writeAll index+1
+                @restoreSelects index+1
+            ( $ "#apply-button-#{index}", @div ).hide()
+            ( $ "#cancel-button-#{index}", @div ).hide()
+        @updatePermalinkElement()
+
+Convenience function for creating a permalink element.
+
+    APISandbox.permalinkElement = ->
+        if not @_permalinkElement?
+            result = @div.ownerDocument.createElement 'a'
+            result.setAttribute 'href', ''
+            result.innerHTML = 'Permalink'
+            ( $ result ).click => window.location.href = @permalink()
+            @_permalinkElement = result
+        @_permalinkElement
+
+This function keeps permalink elements up-to-date.
+
+    APISandbox.updatePermalinkElement = ->
+        @permalinkElement().setAttribute 'href', APISandbox.permalink()
