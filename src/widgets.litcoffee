@@ -158,6 +158,14 @@ invoked.  This command does so.
     APISandbox.restoreSelects = ( index ) ->
         command = @history.states[index].command
 
+First, show the X in the top right of the command UI iff it is not the
+last command UI.
+
+        if index < @history.states.length
+            ( $ "#delete-command-#{index}" ).parent().show()
+        else
+            ( $ "#delete-command-#{index}" ).parent().hide()
+
 For the first drop-down, if the function was invoked on an object, select
 the object's name in the drop-down.
 
@@ -174,14 +182,16 @@ the object's name in the drop-down.
 Also, since this was a method invoked on an object, we must select the
 method from the second drop-down.  Also, show the second drop-down.
 
+            success = no
             for own className, bigdata of @data.members ? { }
                 for own phrase, data of bigdata
                     if data.call is command.method
                         methods.val phrase
                         methods.change()
+                        success = yes
                         break
             methods.show()
-            return
+            if methods.val()? then return
 
 Otherwise look for the command's function among the list of constructors.
 If you find it, choose that constructor from the list.  Then hide the
@@ -334,6 +344,49 @@ so, and we run it once now, to initially populate the parameter table.
             if canApply then showApply() else hideApply()
         select.change()
 
+The apply and delete functions both use the following function to update the
+list of DIVs representing the whole series of computations from some point
+onward.
+
+        updateViewAfter = ( deleteThis = no ) =>
+
+Clear out any content following the newly changed state.
+
+            while result.nextSibling?
+                result.parentNode.removeChild result.nextSibling
+            if deleteThis then result.parentNode.removeChild result
+
+Show the results of this action, plus any others that follow it later in the
+history.
+
+            n = @history.states.length
+            start = if deleteThis then index-1 else index
+            for i in [start...n]
+                if i > 0
+                    @div.appendChild @history.states[i].element
+                @div.appendChild @createCommandUI i+1
+                if i+1 < n
+                    @writeAll i+1
+                    @restoreSelects i+1
+            for i in [start+1...n]
+                ( $ "#apply-button-#{i}", @div ).hide()
+                ( $ "#cancel-button-#{i}", @div ).hide()
+
+Insert into this result DIV a floating X in the top-right corner, for
+deleting the command.
+
+        deleteX = @div.ownerDocument.createElement 'div'
+        deleteX.style.float = 'right'
+        deleteX.innerHTML = "<button type='button'
+            id='delete-command-#{index}'
+            class='btn btn-danger btn-sm'><span class='glyphicon
+            glyphicon-remove'></span></button>"
+        result.insertBefore deleteX, result.childNodes[0]
+        ( $ "#delete-command-#{index}", result ).click =>
+            @history.deleteAction index
+            updateViewAfter yes
+        ( $ deleteX ).hide()
+
 Here is the action that "Apply" performs.
 
         ( $ "#apply-button-#{index}", result ).click =>
@@ -372,24 +425,11 @@ Run that command on the appropriate state in the history.
                 @history.changeAction index, command
             hideApply()
             hideCancel()
+            updateViewAfter()
 
-Clear out any content following the newly changed state.
+Once this command has been applied, it can be deleted.
 
-            while result.nextSibling?
-                result.parentNode.removeChild result.nextSibling
-
-Show the results of this action, plus any others that follow it later in the
-history.
-
-            for i in [index...@history.states.length]
-                @div.appendChild @history.states[i].element
-                @div.appendChild @createCommandUI i+1
-                if i+1 < @history.states.length
-                    @writeAll i+1
-                    @restoreSelects i+1
-            for i in [index+1...@history.states.length]
-                ( $ "#apply-button-#{i}", @div ).hide()
-                ( $ "#cancel-button-#{i}", @div ).hide()
+            ( $ deleteX ).show()
 
 Thus ends the handler for the Apply button.  The Cancel button just puts the
 UI back to the state it was in before it was last Applied.

@@ -26,13 +26,6 @@ new state.  (The `State` class is defined below.)
 
         apply : ( state ) =>
 
-Verify that the object on which we're supposed to run the command exists
-(if such an object was specified by name).
-
-            if @objectName and @objectName not of state.environment
-                throw "Cannot invoke the command, because there is no object
-                    with this name: #{command.objectName}"
-
 Duplicate the old state, then modify it by using the method stored in this
 command.  Return the result.  Note that the last parameter passed is always
 the environment, so that the method may choose to ignore it, or use it if it
@@ -50,7 +43,19 @@ needs to modify it (which most won't).
                     parameter.value
             parameters.push result.environment
             if @objectName? then parameters.unshift @objectName
-            element = @method.apply null, parameters
+
+If the object we're about to invoke this on doesn't exist anymore, say so.
+Otherwise, run the function as expected.
+
+            element = if @objectName and \
+                         @objectName not of state.environment
+                "This command was formerly run on #{@objectName}, which no
+                 longer exists due to changes made up above."
+            else
+                @method.apply null, parameters
+
+Upgrade the result to an element, if it wasn't one already, and return it.
+
             if element not instanceof window.Node
                 div = APISandbox.div.ownerDocument.createElement 'div'
                 div.innerHTML = "#{element}"

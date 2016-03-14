@@ -1,8 +1,4 @@
 
-Extend each command UI with an X in the top right that deletes the command,
-by calling `deleteAction` and then repopulating the view DIV, much like
-`changeAction` does.
-
 Extend each command UI with a "duplicate" button in the top right that
 duplicates the command, by calling `duplicateAction` and then repopulating
 the view DIV, much like the previous task.

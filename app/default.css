@@ -22,13 +22,15 @@ div {
 }
 
 .command-ui {
-    border: 1px solid #bbbbbb;
+    border: 2px solid #bbbbbb;
     margin: 5px;
-    border-radius: 1em;
+    border-radius: 0.5em;
+    margin-top: 2em;
 }
 
 .command-result {
-    border: 1px solid #aaaaff;
+    border: 4px solid #aaaaff;
     margin: 5px;
-    border-radius: 1em;
+    border-radius: 0.5em;
+    margin-bottom: 2em;
 }
