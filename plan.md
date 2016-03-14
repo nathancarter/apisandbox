@@ -1,12 +1,4 @@
 
-Extend the command UI to permit running member functions in this form.
-```
-[Use OBJECT-NAME] [MEMBER-FUNC-PHRASE]
-    [PARAM-NAME-1]  [PARAM-VALUE-1]
-    [PARAM-NAME-2]  [PARAM-VALUE-2]
-    ...             ...
-```
-
 Extend the demo with these functions.
 ```
 w.reverse() # changes w to its reverse

@@ -144,11 +144,54 @@ To read data from all widgets for a given index, use the following routine.
 
 The converse of the above operation is this.
 
-    APISandbox.writeAll = ( index, values ) ->
-        for value, i in values
+    APISandbox.writeAll = ( index ) ->
+        for value, i in @history.states[index].command.parameters
             widget = $ "#input-#{index}-#{i}"
             widget.val value.name ? value.value ? value
             widget.change()
+
+In addition, we'll also want to set the initial one or two drop-down menus
+back to the state they were when the command stored in the history was
+invoked.  This command does so.
+
+    APISandbox.restoreSelects = ( index ) ->
+        command = @history.states[index].command
+
+For the first drop-down, if the function was invoked on an object, select
+the object's name in the drop-down.
+
+        choices = $ "#ctor-select-#{index}"
+        methods = $ "#method-select-#{index}"
+        if command.objectName?
+            for option in choices.get( 0 ).childNodes
+                if option.getAttribute( 'data-object-name' ) is \
+                   command.objectName
+                    choices.val option.getAttribute 'value'
+                    choices.change()
+                    break
+
+Also, since this was a method invoked on an object, we must select the
+method from the second drop-down.  Also, show the second drop-down.
+
+            for own className, bigdata of @data.members ? { }
+                for own phrase, data of bigdata
+                    if data.call is command.method
+                        methods.val phrase
+                        methods.change()
+                        break
+            methods.show()
+            return
+
+Otherwise look for the command's function among the list of constructors.
+If you find it, choose that constructor from the list.  Then hide the
+methods drop-down.
+
+        for own phrase, data of @data.constructors ? { }
+            if data.call is command.method
+                choices.val phrase
+                choices.change()
+                break
+        methods.hide()
 
 The following function creates the DOM element containing all the input
 widgets (and their labels) for an entire sequence of parameters to a given
@@ -160,7 +203,7 @@ provide as `funcName` the phrase describing the constructor.  The result is
 a two-column table.
 
     APISandbox.tableForFunction = ( index, className, funcName ) ->
-        data = if className then @data.methods?[className]?[funcName] \
+        data = if className then @data.members?[className]?[funcName] \
             else @data.constructors?[funcName]
         result = @div.ownerDocument.createElement 'div'
         table = @div.ownerDocument.createElement 'table'
@@ -168,7 +211,7 @@ a two-column table.
         table.style.borderCollapse = 'separate'
         table.setAttribute 'width', '100%'
         result.appendChild table
-        for parameter, i in data.parameters
+        for parameter, i in data?.parameters ? { }
             table.appendChild @inputWidget index, i, parameter
         result
 
@@ -183,29 +226,63 @@ that we can populate drop-down menus in widgets for this action.
 
         @history.states[index-1]?.computeObjectsInClass?()
 
-Build the drop-down menu listing all the constructors.
+Build the drop-down menu listing all the constructors and objects.
 
         result = @div.ownerDocument.createElement 'div'
         result.setAttribute 'class', 'command-ui'
         result.setAttribute 'id', "command-ui-#{index}"
         result.innerHTML = "<select id='ctor-select-#{index}'></select>"
         select = $ "#ctor-select-#{index}", result
-        firstPhrase = null
+        for cname, objects of @history.states[index-1]?.objectsInClass ? { }
+            for object in objects
+                option = @div.ownerDocument.createElement 'option'
+                option.setAttribute 'value', cname
+                option.setAttribute 'data-object-name', object
+                option.innerHTML = "With the #{cname} #{object},"
+                result.childNodes[0].appendChild option
         for phrase, data of @data.constructors
-            firstPhrase ?= phrase
             option = @div.ownerDocument.createElement 'option'
             option.setAttribute 'value', option.innerHTML = phrase
             result.childNodes[0].appendChild option
 
-If there were no constructors, stop here as a corner case.
+If that drop-down menu is empty, stop here as a corner case.
 
-        if not firstPhrase then return result
+        if select.get( 0 ).childNodes.length is 0 then return result
+
+Create a second drop-down list next to the first, for use when an object is
+selected in the first.  The second drop-down list will allow the user to
+choose the method within that object that they wish to invoke.
+
+        methods = @div.ownerDocument.createElement 'select'
+        methods.setAttribute 'id', "method-select-#{index}"
+        select.after methods
+        hideMethods = -> ( $ methods ).hide()
+        showMethods = -> ( $ methods ).show()
+        hideMethods()
+
+Here's a method for populating the methods list with all the members of a
+given class.
+
+        fillMethods = ( className ) =>
+            while methods.childNodes.length > 0
+                methods.removeChild methods.childNodes[0]
+            for phrase, data of ( @data.members ? { } )[className] ? { }
+                option = @div.ownerDocument.createElement 'option'
+                option.setAttribute 'value', option.innerHTML = phrase
+                methods.appendChild option
+                if methods.childNodes.length is 1
+                    ( $ methods ).val phrase
+            if methods.childNodes.length is 0
+                option = @div.ownerDocument.createElement 'option'
+                option.setAttribute 'value', ''
+                option.innerHTML = 'there is nothing you can do'
+                methods.appendChild option
+                ( $ methods ).val ''
 
 Create the function input table for the first (and selected) constructor.
 For now, this is an empty DIV, but we will run a routine below that
 populates it.
 
-        result.childNodes[0].childNodes[0]?.setAttribute 'selected', yes
         table = @div.ownerDocument.createElement 'div'
         table.setAttribute 'id', "parameters-for-#{index}"
         result.appendChild table
@@ -228,7 +305,17 @@ swap that parameter table out for a new one.  Here's the method for doing
 so, and we run it once now, to initially populate the parameter table.
 
         select.change =>
-            newTable = @tableForFunction index, null, select.val()
+            choice = select.val()
+            canApply = yes
+            if @data.constructors?[choice]?
+                hideMethods()
+                newTable = @tableForFunction index, null, choice
+            else
+                fillMethods choice
+                showMethods()
+                method = ( $ methods ).val()
+                newTable = @tableForFunction index, choice, method
+                canApply = method isnt ''
             ( $ table ).replaceWith newTable
             newTable.setAttribute 'id', "parameters-for-#{index}"
             table = newTable
@@ -238,19 +325,24 @@ so, and we run it once now, to initially populate the parameter table.
             ( $ '.command-ui-input', result ).keyup =>
                 showApply()
                 if @history.states[index]?.command? then showCancel()
-            showApply()
+            if canApply then showApply() else hideApply()
         select.change()
 
 Here is the action that "Apply" performs.
 
         ( $ "#apply-button-#{index}", result ).click =>
 
-Find which constructor is currently selected and try to get all of its
-parameters.  This may fail if a validator fails, and if so, stop here.
+Find which object or constructor is currently selected.
 
-            choice = ( $ "#ctor-select-#{index}", result ).val()
-            if not ctorData = @data.constructors[choice]
-                return console.log 'Error: no such constructor:', choice
+            choice = select.val()
+            className = objectName = null
+            if not funcData = @data.constructors[choice]
+                objectName = select.find( ':selected' ).get( 0 ). \
+                    getAttribute 'data-object-name'
+                funcData = @data.members[choice][( $ methods ).val()]
+
+Try to get all the function's parameters.  If a validator fails, stop here.
+
             try
                 parameters = @readAll index
             catch e
@@ -258,12 +350,13 @@ parameters.  This may fail if a validator fails, and if so, stop here.
 
 Construct a new command to run.
 
-            encodedParameters = for paramData, i in ctorData.parameters
+            encodedParameters = for paramData, i in funcData.parameters
                 if paramData.type is 'object'
                     name : parameters[i]
                 else
                     value : parameters[i]
-            command = new @Command null, ctorData.call, encodedParameters...
+            command = new @Command objectName, funcData.call,
+                encodedParameters...
 
 Run that command on the appropriate state in the history.
 
@@ -286,8 +379,9 @@ history.
                 @div.appendChild @history.states[i].element
                 @div.appendChild @createCommandUI i+1
                 if i+1 < @history.states.length
-                    @writeAll i+1, @history.states[i+1].command.parameters
-            for i in [index+1..@history.states.length]
+                    @writeAll i+1
+                    @restoreSelects i+1
+            for i in [index+1...@history.states.length]
                 ( $ "#apply-button-#{i}", @div ).hide()
                 ( $ "#cancel-button-#{i}", @div ).hide()
 
@@ -295,7 +389,8 @@ Thus ends the handler for the Apply button.  The Cancel button just puts the
 UI back to the state it was in before it was last Applied.
 
         ( $ "#cancel-button-#{index}", result ).click =>
-            @writeAll index, @history.states[index].command.parameters
+            @writeAll index
+            @restoreSelects index
             hideApply()
             hideCancel()
 

@@ -29,6 +29,7 @@ Words are strings of characters in the range a-z.
         name : 'the word to add'
         description : 'the word to add (e.g., "red" or "hamster")'
         type : 'string'
+        defaultValue : 'example'
         validator : ( string ) ->
             if string.length is 0
                 valid : no

@@ -48,8 +48,9 @@ needs to modify it (which most won't).
                     state.environment[parameter.name]
                 else
                     parameter.value
-            element = @method.apply result.environment[@objectName],
-                [ parameters..., result.environment ]
+            parameters.push result.environment
+            if @objectName? then parameters.unshift @objectName
+            element = @method.apply null, parameters
             if element not instanceof window.Node
                 div = APISandbox.div.ownerDocument.createElement 'div'
                 div.innerHTML = "#{element}"
