@@ -1,11 +1,6 @@
 
-Add a medium Example, using an SVG toolkit like [Snap](http://snapsvg.io),
-in a new demo page, `demo2.html`.
-```coffee
-HandfulOfDice(n) # constructor
-h.roll(m) # list of sums, with histogram
-h.show() # picture of n dice
-```
+Implement "show" method of Handful in Demo 2.
+Implement "roll" method of Handful in Demo 2.
 
 Add support for descriptions to show up as tooltips over input widgets
 and/or their labels.
