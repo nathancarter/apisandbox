@@ -1,5 +1,1 @@
 node_modules
-app/*.js
-app/*.js.map
-app/*.min.*
-app/*.litcoffee
