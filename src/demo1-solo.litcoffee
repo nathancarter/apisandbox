@@ -109,7 +109,8 @@ Set the whole system up, using the data above.
 
     APISandbox.setup document.getElementById 'main-div'
 
-Append a permalink button to the title div.
+Append permalink and clear buttons to the title div.
 
-    document.getElementById( 'title-div' ).appendChild \
-        APISandbox.permalinkElement()
+    ( $ '#title-div' ).append APISandbox.permalinkElement()
+    ( $ '#title-div' ).append ' &mdash; '
+    ( $ '#title-div' ).append APISandbox.clearElement()

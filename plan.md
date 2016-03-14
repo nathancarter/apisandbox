@@ -1,6 +1,4 @@
 
-Create a Clear button that clears the contents of the page.
-
 Add a medium Example, using an SVG toolkit like [Snap](http://snapsvg.io),
 in a new demo page, `demo2.html`.
 ```coffee

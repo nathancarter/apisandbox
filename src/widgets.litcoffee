@@ -500,3 +500,11 @@ This function keeps permalink elements up-to-date.
 
     APISandbox.updatePermalinkElement = ->
         @permalinkElement().setAttribute 'href', APISandbox.permalink()
+
+Convenience function for creating a "clear" element.
+
+    APISandbox.clearElement = ->
+        result = @div.ownerDocument.createElement 'a'
+        result.setAttribute 'href', window.location.href.split( '?' )[0]
+        result.innerHTML = 'Clear'
+        result
