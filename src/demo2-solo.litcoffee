@@ -1,7 +1,13 @@
 
 # API Sandbox Dice Demo
 
-This function finds the first letter not used as a key in a given object.
+If you have not yet read [the tiny demo](demo1-solo.litcoffee), you should
+start there first.  This file is very similar to that one, and anything they
+have in common is not re-explained here.  Note that this file is the script
+code, but [the page itself is here](demo2.html).
+
+I repeat here the `nextUnusedLetter` function from the tiny demo; see that
+file for more information.
 
     nextUnusedLetter = ( object ) ->
         letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -16,10 +22,22 @@ This function finds the first letter not used as a key in a given object.
                 suffix++
         candidate()
 
-Words are strings of characters in the range a-z.
+## The `handful` class
+
+In this demo, the user can create "handfuls" of dice, and then roll them
+repeatedly, creating histograms of the sums rolled.  Because this demo is
+so small, it only has one class, so we can guarantee that any object in the
+environment is an instance of this class; thus the characteristic function
+can just say yes to everything.
 
     APISandbox.addClass 'handful', 'A handful of dice',
-        ( x ) -> yes # it's the only class in this demo so x is an instance!
+        ( x ) -> yes
+
+## The `handful` constructor
+
+When constructing a handlful of dice, you simply say how many dice you want
+in your handful (an integer from 1 to 20).
+
     APISandbox.addConstructor 'Take a new handful of dice',
         ( count, environment ) ->
             key = nextUnusedLetter environment
@@ -32,11 +50,33 @@ Words are strings of characters in the range a-z.
         min : 1
         max : 20
         defaultValue : '3'
+
+## The `handful` methods
+
+There are two methods you can do with a handful of dice.  You can look at
+them, and you can roll them.  Both return SVGs showing pictures, the former
+of a set of dice, the latter of a histogram of the rolls.  We use
+[SnapSVG](http://snapsvg.io/) to create the SVGs.
+
     APISandbox.addMethod 'handful', 'show a picture of it',
         ( name, environment ) ->
+
+This function, like the member functions in [demo 1](demo1.litcoffee), takes
+no parameters other than the object itself and the environment.  But it
+differs from functions in [demo 1](demo1.litcoffee) in that it does not
+return text (which the system converts into DOM elements) but it returns DOM
+elements itself.
+
+We begin by creating a DIV into which we will place a paragraph and an SVG.
+
             result = document.createElement 'div'
             result.innerHTML = "<p>Your #{environment[name]} dice might look
                 like this, if you arranged them neatly.</p>"
+
+You can ignore most of the following code unless you're interested in
+learning [SnapSVG](http://snapsvg.io/).  It creates a picture of a row of
+dice, storing it in the `Snap` object named `svg`.
+
             count = environment[name]
             size = 70
             svg = new Snap size*count, size
@@ -58,10 +98,26 @@ Words are strings of characters in the range a-z.
                 dots x, y, x+c, y+s, 1
                 dots x-c, y-s, x, y+r, 2
                 dots x-c, y-s, x+c, y-s, 3
+
+Finally, we place that object after the paragraph whose code appears above,
+and return the containing DIV.  It will be placed into the document, as the
+visible result of the function the user invoked.
+
             svg.insertAfter result.childNodes[0]
             result
+
+The other method of a handful of dice is to roll them.  This method does
+take a parameter, the number of times the user wishes to roll the dice.
+
     APISandbox.addMethod 'handful', 'roll the dice',
         ( name, numRolls, environment ) ->
+
+Notice the `numRolls` parameter above, between the object name and the
+environment.
+
+The following code rolls the dice the specified number of times, creating an
+object called `result` that stores the histogram data.
+
             rollOne = -> 1 + Math.floor Math.random()*6
             numDice = environment[name]
             roll = ->
@@ -76,6 +132,10 @@ Words are strings of characters in the range a-z.
             maxCount = 0
             for own r, count of result
                 maxCount = Math.max maxCount, count
+
+The following code creates the SVG of the histogram.  Again, unless you want
+to learn this particular graphics toolkit, most of this can be ignored.
+
             barWidth = 30
             height = 100
             textHeight = 30
@@ -90,6 +150,10 @@ Words are strings of characters in the range a-z.
                 svg.text x+3*mar, textHeight+height-barHeight-3,
                     result[i] ? '0'
                 svg.text x+3*mar, height+textHeight*2, i
+
+Here we create the DIV we will return to the user, place an introductory
+paragraph into it, then place the SVG after that paragraph.  Return the DIV.
+
             div = document.createElement 'div'
             div.innerHTML = "<p>Here is a histogram showing the results of
                 all #{numRolls} rolls of the #{numDice} dice in handful
@@ -98,6 +162,11 @@ Words are strings of characters in the range a-z.
             svg.insertAfter div.childNodes[0]
             div
         ,
+
+The second, third, fourth, etc. parameters to `addMethod` specify any
+parameters the method takes.  In this case, it takes one, how many times
+to roll the dice.
+
             name : 'how many times to roll the dice'
             description : 'an integer number of rolls, from 1 to 1000'
             type : 'integer'
@@ -105,12 +174,12 @@ Words are strings of characters in the range a-z.
             max : 1000
             defaultValue : 100
 
-Set the whole system up, using the data above.
+## Setup
+
+The setup, permalink, and clear code is the same as it was in
+[demo 1](demo1.litcoffee).  Refer there for documentation on this code.
 
     APISandbox.setup document.getElementById 'main-div'
-
-Append permalink and clear buttons to the title div.
-
     ( $ '#title-div' ).append APISandbox.permalinkElement()
     ( $ '#title-div' ).append ' &mdash; '
     ( $ '#title-div' ).append APISandbox.clearElement()
