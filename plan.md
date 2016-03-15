@@ -1,6 +1,4 @@
 
-Link from the demo pages themselves to the source code as documentation.
-
 Add support for descriptions to show up as tooltips over input widgets
 and/or their labels.
 
