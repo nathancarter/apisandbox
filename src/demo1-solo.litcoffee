@@ -4,7 +4,7 @@
 This demo is "tiny" in the sense that the classes it defines are simple and
 mostly uninsteresting.  They're only interesting if you're here to learn how
 to define your own API Sandbox apps.  Note that this is the script code, but
-[the page itself is here](demo1.html).
+[the page itself is here](../app/demo1.html).
 
 [See the demo in action here.](
 http://nathancarter.github.io/apisandbox/app/demo1.html)

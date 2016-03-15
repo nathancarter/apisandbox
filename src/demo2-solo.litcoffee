@@ -4,7 +4,7 @@
 If you have not yet read [the tiny demo](demo1-solo.litcoffee), you should
 start there first.  This file is very similar to that one, and anything they
 have in common is not re-explained here.  Note that this file is the script
-code, but [the page itself is here](demo2.html).
+code, but [the page itself is here](../app/demo2.html).
 
 I repeat here the `nextUnusedLetter` function from the tiny demo; see that
 file for more information.
