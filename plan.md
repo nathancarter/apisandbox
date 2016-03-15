@@ -1,6 +1,4 @@
 
-Document the source code of the second demo, with a link back to the README.
-
 Link from the demo pages themselves to the source code as documentation.
 
 Add support for descriptions to show up as tooltips over input widgets
