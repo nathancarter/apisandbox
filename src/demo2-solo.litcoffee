@@ -30,8 +30,7 @@ so small, it only has one class, so we can guarantee that any object in the
 environment is an instance of this class; thus the characteristic function
 can just say yes to everything.
 
-    APISandbox.addClass 'handful', 'A handful of dice',
-        ( x ) -> yes
+    APISandbox.addClass 'handful', 'A handful of dice', -> yes
 
 ## The `handful` constructor
 

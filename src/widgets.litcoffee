@@ -20,7 +20,7 @@ specify parameters when calling functions like
 Create the HTML code for the input widget, based on the data type.  Include
 the CSS ID just created above.
 
-        if typeName[...7] is 'object:'
+        if typeName?[...7] is 'object:'
             className = typeName[7..]
             typeName = 'object'
         else

@@ -81,6 +81,7 @@ all `-solo.litcoffee` files in the src and app folders.
 
         solofiles = build.dir appdir, /-solo.litcoffee$/
         srcsolofiles = build.dir srcdir, /-solo.litcoffee$/
+        srcjsfiles = build.dir srcdir, /.js$/
         buildNext = ->
             if solofiles.length > 0
                 build.compile solofiles.shift(), buildNext
@@ -91,7 +92,10 @@ all `-solo.litcoffee` files in the src and app folders.
                     "app/#{prefix}litcoffee",
                     -> build.compile file, buildNext, appdir
             else
-                done()
+                file = srcjsfiles.shift()
+                localName = file.split( '/' ).pop()
+                build.copyFile "src/#{localName}", "app/#{localName}",
+                    done
 
 We put that function as the last step in the compilation sequence, by using
 it as the last callback, below.
