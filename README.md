@@ -21,7 +21,7 @@ of the classes and experiment with the methods.
  * Create computation-based puzzle games
  * Create a UI for non-experts to interact with technical content
 
-## [Demo apps](nathancarter.github.io/apisandbox)
+## [Demo apps](http://nathancarter.github.io/apisandbox)
 
 Click the heading.
 
