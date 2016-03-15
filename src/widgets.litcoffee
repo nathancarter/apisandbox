@@ -369,8 +369,8 @@ history.
                     @div.appendChild @history.states[i].element
                 @div.appendChild @createCommandUI i+1
                 if i+1 < n
-                    @writeAll i+1
                     @restoreSelects i+1
+                    @writeAll i+1
             for i in [start+1...n]
                 ( $ "#apply-button-#{i}", @div ).hide()
                 ( $ "#cancel-button-#{i}", @div ).hide()
@@ -451,8 +451,8 @@ Thus ends the handler for the Apply button.  The Cancel button just puts the
 UI back to the state it was in before it was last Applied.
 
         ( $ "#cancel-button-#{index}", result ).click =>
-            @writeAll index
             @restoreSelects index
+            @writeAll index
             hideApply()
             hideCancel()
 
@@ -479,8 +479,8 @@ in response to that permalink now.  This should only be called by
                 @div.appendChild state.element
                 @div.appendChild @createCommandUI index+1
             if index < @history.states.length - 1
-                @writeAll index+1
                 @restoreSelects index+1
+                @writeAll index+1
             ( $ "#apply-button-#{index}", @div ).hide()
             ( $ "#cancel-button-#{index}", @div ).hide()
         @updatePermalinkElement()
