@@ -48,7 +48,7 @@ If the object we're about to invoke this on doesn't exist anymore, say so.
 Otherwise, run the function as expected.
 
             element = if @objectName and \
-                         @objectName not of state.environment
+                         @objectName not of result.environment
                 "This command was formerly run on #{@objectName}, which no
                  longer exists due to changes made up above."
             else
