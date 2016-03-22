@@ -45,7 +45,7 @@
       if (this.objectName != null) {
         parameters.unshift(this.objectName);
       }
-      element = this.objectName && !(this.objectName in state.environment) ? "This command was formerly run on " + this.objectName + ", which no longer exists due to changes made up above." : this.method.apply(null, parameters);
+      element = this.objectName && !(this.objectName in result.environment) ? "This command was formerly run on " + this.objectName + ", which no longer exists due to changes made up above." : this.method.apply(null, parameters);
       if (!(element instanceof window.Node)) {
         div = APISandbox.div.ownerDocument.createElement('div');
         div.innerHTML = "" + element;
@@ -351,7 +351,7 @@
     typeName = type.type;
     id = "input-" + index + "-" + paramIndex;
     idexpr = "id='" + id + "'";
-    if (typeName.slice(0, 7) === 'object:') {
+    if ((typeName != null ? typeName.slice(0, 7) : void 0) === 'object:') {
       className = typeName.slice(7);
       typeName = 'object';
     } else {
@@ -715,8 +715,8 @@
           }
           _this.div.appendChild(_this.createCommandUI(i + 1));
           if (i + 1 < n) {
-            _this.writeAll(i + 1);
             _this.restoreSelects(i + 1);
+            _this.writeAll(i + 1);
           }
         }
         _results = [];
@@ -802,8 +802,8 @@
     })(this));
     ($("#cancel-button-" + index, result)).click((function(_this) {
       return function() {
-        _this.writeAll(index);
         _this.restoreSelects(index);
+        _this.writeAll(index);
         hideApply();
         return hideCancel();
       };
@@ -836,8 +836,8 @@
         this.div.appendChild(this.createCommandUI(index + 1));
       }
       if (index < this.history.states.length - 1) {
-        this.writeAll(index + 1);
         this.restoreSelects(index + 1);
+        this.writeAll(index + 1);
       }
       ($("#apply-button-" + index, this.div)).hide();
       ($("#cancel-button-" + index, this.div)).hide();
